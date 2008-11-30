@@ -1,0 +1,5 @@
+h2. This is the website for the Compass Stylesheet Framework
+
+This website is hosted at "http://compass-style.org/"http://compass-style.org/
+
+In addition to being the compass website, it also serves as a real-world example for how to build a Compass-based Rails application.
