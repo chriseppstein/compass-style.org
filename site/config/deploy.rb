@@ -46,3 +46,6 @@ set :use_sudo, false
 deploy.task :start do
   run "touch #{release_path}/tmp/restart.txt"
 end
+deploy.task :restart do
+  run "touch #{release_path}/tmp/restart.txt"
+end
