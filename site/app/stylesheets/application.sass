@@ -7,37 +7,5 @@
 
 #wrap
   +container
-  
-body#home
-  h1
-    +replace-text("/images/compass.png")
-    :height 118px
-  .tagline
-    +column(5, true)
-    +prepend(4)
-    :font-family "Arial Rounded MT Bold"
-    :font-size 26px
-    :text-align right
-    :margin
-      :top -1.5em
-      :bottom 1.5em
-  p.description
-    +column(9)
-    :font-size 22px
-    :color #3f3837
-    a
-      +hover-link
-      +link-colors(#3068a9,#5f49a9)
-  ol#next-steps
-    +column(9)
-    +no-bullets
-    li
-      +column(3)
-      :text-align center
-      :font-size 26px      
-      :font-family "Arial Rounded MT Bold"
-      a
-        +hover-link
-        +link-colors(#3f3837,#6f6d52)
-    li.help
-      +last
+
+@import partials/home.sass
