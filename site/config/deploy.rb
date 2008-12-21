@@ -4,7 +4,7 @@ set :project, 'compass'
 set :application, "compass"
 set :applicationdir, "/home/#{user}/#{application}"
 set :scm, :git
-set :repository,  "git://76.102.102.216/compass-style.org/.git"
+set :repository,  "git://github.com/chriseppstein/compass-style.org.git"
 
 task :move_directory, :roles => [:app] do
   run "cp -Rf #{release_path}/site/* #{release_path}/"
