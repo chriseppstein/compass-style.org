@@ -1,12 +1,15 @@
 @import compass/reset.sass
 @import partials/base.sass
 @import blueprint.sass
+@import compass/layout.sass
 @import compass/utilities.sass
 
 +blueprint-typography
 
-#wrap
+body
+  :padding-top 3em
+
+.wrap
   +container
-  :margin-top 3em
 
 @import partials/home.sass

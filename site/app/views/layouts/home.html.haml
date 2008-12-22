@@ -4,10 +4,14 @@
     %title Compass
     = stylesheet_link_tag "application"
   %body#home
-    #wrap
-      = yield
-      %ul#footer
-        %li.opensource
-          = link_to 'compass is opensource.', 'http://www.opensource.org/'
-        %li.dryicons
-          = link_to 'Icons by DryIcons.com', 'http://dryicons.com'
+    .wrap
+      #content
+        = yield
+      #layout_footer
+    #footer
+      .wrap
+        %ul
+          %li.opensource
+            = link_to 'compass is opensource.', 'http://www.opensource.org/'
+          %li.dryicons
+            = link_to 'Icons by DryIcons.com', 'http://dryicons.com'
