@@ -6,3 +6,8 @@
   %body#home
     #wrap
       = yield
+      %ul#footer
+        %li.opensource
+          = link_to 'compass is opensource.', 'http://github.com/chriseppstein/compass-style.org/tree/master'
+        %li.dryicons
+          = link_to 'Icons by DryIcons.com', 'http://dryicons.com'

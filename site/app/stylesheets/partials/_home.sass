@@ -3,7 +3,7 @@ body#home
     +replace-text("/images/compass.png")
     :height 118px
   .tagline
-    +column(5, true)
+    +column(5, last)
     +prepend(4)
     :font-family "Arial Rounded MT Bold"
     :font-size 26px
@@ -11,24 +11,62 @@ body#home
     :margin
       :top -1.5em
       :bottom 1.5em
-  p.description
-    +column(9)
-    :font-size 22px
-    :color #3f3837
-    a
-      +hover-link
-      +link-colors(#3068a9,#5f49a9)
+  .description
+    +column(6)
+    p
+      :font-size 22px
+      :color #3f3837
+      :border-right 2px dashed #3f3837
+      :padding-right 20px
+      a
+        +hover-link
+        +link-colors(#3068a9,#5f49a9)
   ol#next-steps
     +reset-box-model
-    +column(9)
+    +column(3, last)
     +no-bullets
+    :margin-left 0
     li
-      +column(3)
-      :text-align center
+      :text-align left
       :font-size 26px      
       :font-family "Arial Rounded MT Bold"
+      :margin-bottom 1em
+      :padding-left 50px
+      :background
+        :repeat no-repeat
+        :position left center
       a
         +hover-link
         +link-colors(#3f3837,#6f6d52)
-    li.help
+    li.download
+      :background-image url(/images/icons/download.png)
+      :margin-top 1em
+    li.learn
+      :background-image url(/images/icons/learn.png)
+    li.support
+      :background-image url(/images/icons/support.png)
       +last
+  ul#footer
+    +column(9)
+    +no-bullets
+    :margin-left 0
+    li.opensource
+      +column(6)
+      :font-family "Arial Rounded MT Bold"
+      :font-size 26px
+      :height 50px
+      :line-height 50px
+      :background
+        :image url(/images/icons/opensource.png)
+        :repeat no-repeat
+        :position left center      
+      a
+        +hover-link
+        +link-colors(#3f3837,#6f6d52)
+        :padding-left 60px
+    li.dryicons
+      +column(3, last)
+      a
+        +hover-link
+        +link-colors(#bdb4b2,#6f6d52)
+        :line-height 62px
