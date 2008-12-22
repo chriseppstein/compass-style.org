@@ -1,9 +1,10 @@
-+sticky-footer(72px, "#main", "#layout_footer", "#footer")
++sticky-footer(60px, "#main", "#layout_footer", "#footer")
 
 body#home
   h1
     +replace-text("/images/compass.png")
     :height 118px
+    :margin-top 1em
   .tagline
     +column(5, last)
     +prepend(4)
@@ -54,7 +55,7 @@ body#home
     ul
       +column(9)
       +no-bullets
-      :margin-left 0
+      +reset-box-model
       li.opensource
         +column(6)
         :font-family "Arial Rounded MT Bold"
