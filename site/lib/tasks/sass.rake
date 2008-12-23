@@ -22,7 +22,9 @@ namespace :sass do
       doc = open(file) {|f| Hpricot(f.read) }
       doc.search("span.nn") do |span|
         puts "Checking if #{span.inner_text} exists."
-        if full_path = Sass::Engine.find_full_path(span.inner_text, ["app/stylesheets"])
+        local_dir = "app/stylesheets/#{File.dirname(file)[31..-1]}"
+        puts local_dir
+        if full_path = Sass::Engine.find_full_path(span.inner_text, ["app/stylesheets", local_dir])
           puts "Found #{span.inner_text} at #{full_path}"
           wrapped = span.make(%Q{<a class="import" href="/hl/#{full_path[16..-1]}">#{span}</a>})
           span.parent.replace_child(span, wrapped)
