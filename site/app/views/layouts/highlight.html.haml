@@ -1,0 +1,17 @@
+!!!
+%html
+  %head
+    %title Compass
+    = stylesheet_link_tag "application"
+  %body#stylesheet
+    #main.wrap
+      #content
+        :preserve
+          #{yield}
+      #layout_footer
+    #footer
+      .wrap
+        This stylesheet is built on
+        = succeed "." do
+          %a{:href => "http://github.com/chriseppstein/compass/"}
+            Compass
