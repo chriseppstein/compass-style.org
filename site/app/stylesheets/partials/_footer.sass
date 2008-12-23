@@ -1,0 +1,26 @@
+@import base.sass
+
++sticky-footer(60px, "#main", "#layout_footer", "#footer")
+
+#footer
+  ul
+    +column(9)
+    +no-bullets
+    +reset-box-model
+    li
+      +column(3)
+      :height 50px
+      :line-height 50px      
+      :font-size 13px
+    li.opensource,
+    li.viewsource
+      +compass-font
+    li.opensource
+      :background transparent url(/images/icons/opensource.png) no-repeat left center
+      a
+        :padding-left 45px
+    li.dryicons
+      +last
+      a
+        +hover-link
+        +link-colors(#bdb4b2,#6f6d52)

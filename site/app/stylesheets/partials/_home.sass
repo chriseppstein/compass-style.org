@@ -1,4 +1,4 @@
-+sticky-footer(60px, "#main", "#layout_footer", "#footer")
+@import base.sass
 
 body#home
   h1
@@ -6,9 +6,9 @@ body#home
     :height 118px
     :margin-top 1em
   .tagline
-    +column(5, last)
+    +column(5, true)
     +prepend(4)
-    :font-family "Arial Rounded MT Bold"
+    +compass-font
     :font-size 26px
     :text-align right
     :margin
@@ -25,23 +25,20 @@ body#home
         +hover-link
         +link-colors(#3068a9,#5f49a9)
   ol#next-steps
+    // Note: We're using an ol as a blueprint column
+    // So we have to reset its box model
     +reset-box-model
-    +column(3, last)
+    +column(3, true)
     +no-bullets
-    :margin-left 0
+    +compass-font
     li
-      :text-align left
       :font-size 20px
       :line-height 36px
-      :font-family "Arial Rounded MT Bold"
       :margin-bottom 1em
       :padding-left 50px
       :background
         :repeat no-repeat
         :position left center
-      a
-        +hover-link
-        +link-colors(#3f3837,#6f6d52)
     li.download
       :background-image url(/images/icons/download.png)
     li.learn
@@ -50,29 +47,4 @@ body#home
       :background-image url(/images/icons/support.png)
     li.get-involved
       :background-image url(/images/icons/get_involved.png)
-      +last
-  #footer
-    ul
-      +column(9)
-      +no-bullets
-      +reset-box-model
-      li.opensource
-        +column(6)
-        :font-family "Arial Rounded MT Bold"
-        :font-size 20px
-        :height 50px
-        :line-height 50px
-        :background
-          :image url(/images/icons/opensource.png)
-          :repeat no-repeat
-          :position left center      
-        a
-          +hover-link
-          +link-colors(#3f3837,#6f6d52)
-          :padding-left 60px
-      li.dryicons, li.viewsource
-        +column(3, last)
-        a
-          +hover-link
-          +link-colors(#bdb4b2,#6f6d52)
-          :line-height 26px
+

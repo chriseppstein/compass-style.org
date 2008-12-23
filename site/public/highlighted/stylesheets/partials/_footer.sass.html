@@ -1,0 +1,53 @@
+<table class="highlighttable"><tr><td class="linenos"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <a href="/hl/partials/_base.sass" class="import"><span class="nn">base.sass</span></a>
+
+<span class="nf">+sticky-footer</span><span class="p">(</span><span class="nt">60px</span><span class="o">,</span> <span class="s2">&quot;#main&quot;</span><span class="o">,</span> <span class="s2">&quot;#layout_footer&quot;</span><span class="o">,</span> <span class="s2">&quot;#footer&quot;</span><span class="p">)</span>
+
+<span class="nl">#footer</span>
+  <span class="nt">ul</span>
+    <span class="nf">+column</span><span class="p">(</span><span class="nt">9</span><span class="p">)</span>
+    <span class="nf">+no-bullets</span>
+    <span class="nf">+reset-box-model</span>
+    <span class="nt">li</span>
+      <span class="nf">+column</span><span class="p">(</span><span class="nt">3</span><span class="p">)</span>
+      <span class="o">:</span><span class="k">height</span> <span class="m">50px</span>
+      <span class="o">:</span><span class="k">line-height</span> <span class="m">50px</span>      
+      <span class="o">:</span><span class="k">font-size</span> <span class="m">13px</span>
+    <span class="nt">li</span><span class="nc">.opensource</span><span class="o">,</span>
+    <span class="nt">li</span><span class="nc">.viewsource</span>
+      <span class="nf">+compass-font</span>
+    <span class="nt">li</span><span class="nc">.opensource</span>
+      <span class="o">:</span><span class="k">background</span> <span class="k">transparent</span> <span class="sx">url(/images/icons/opensource.png)</span> <span class="k">no-repeat</span> <span class="k">left</span> <span class="k">center</span>
+      <span class="err">a</span>
+        <span class="o">:</span><span class="k">padding-left</span> <span class="m">45px</span>
+    <span class="nt">li</span><span class="nc">.dryicons</span>
+      <span class="nf">+last</span>
+      <span class="nt">a</span>
+        <span class="nf">+hover-link</span>
+        <span class="nf">+link-colors</span><span class="p">(</span><span class="nl">#bdb4b2</span><span class="o">,</span><span class="nl">#6f6d52</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>

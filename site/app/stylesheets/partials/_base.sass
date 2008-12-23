@@ -1,3 +1,12 @@
 !blueprint_grid_columns = 9
 !blueprint_grid_margin = 20px
 !blueprint_grid_width = (640px - 8 * !blueprint_grid_margin) / !blueprint_grid_columns
+
+@import compass/utilities/links.sass
+
+=compass-font
+  :font-family "Arial Rounded MT Bold"
+  :color #3f3837
+  a
+    +hover-link
+    +link-colors(#3f3837,#6f6d52)
