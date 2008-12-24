@@ -1,0 +1,10 @@
+%h1 Create Sass Stylesheet
+- form_for :stylesheet, :url => pixelations_stylesheets_path do |f|
+  %dl
+    %dt Title
+    %dd= f.text_field :title
+    %dt Sass Code
+    %dd= f.text_area :sass
+  = submit_tag
+    
+    

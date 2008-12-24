@@ -9,6 +9,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20081224190048) do
+
+  create_table "stylesheets", :force => true do |t|
+    t.string   "title"
+    t.string   "url_name"
+    t.text     "sass"
+    t.text     "css"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "stylesheets", ["url_name"], :name => "index_stylesheets_on_url_name", :unique => true
 
 end

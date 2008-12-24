@@ -1,0 +1,26 @@
+@import compass/utilities/general/reset.sass
+@import compass/utilities/general/clearfix.sass
+
+=create-pixels(!bg_color = #fff, !pixel_selector = "p")
+  #{!pixel_selector}
+    +reset-box-model
+    :float left
+    :width 1px
+    :height 1px
+    :background-color #fff
+
+#container
+  :width 100px
+  :margin 5em auto 2em
+  :padding 1em
+  :border 3px solid #aaa
+.pixelated
+  +create-pixels
+  +clearfix
+
+p#description, p#please-wait
+  :text-align center
+
+body#pixelations
+  #footer
+    :text-align center

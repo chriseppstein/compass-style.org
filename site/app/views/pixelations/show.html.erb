@@ -1,0 +1,44 @@
+<p id="please-wait">
+  Rendering Pixels.<br/>
+  Please Wait.
+</p>
+<div id="container">
+<div id="pixels0" class="pixelated">
+</div>
+<div id="pixels1" class="pixelated">
+</div>
+<div id="pixels2" class="pixelated">
+</div>
+<div id="pixels3" class="pixelated">
+</div>
+</div>
+<p id="description" style="display: none;">
+Above there are ten thousand DOM elements.<br/>
+Each one has been styled with CSS generated from a Sass Stylesheet.<br/>
+This is a very inefficient way to transmit pictures.<br/>
+<br/>
+Use your browser's alternate stylesheet feature to see other designs.
+</p>
+
+<script type="text/javascript">
+  function render_pixels() {
+    render_line.defer($('pixels0'), 0, 25)
+    render_line.defer($('pixels1'), 26, 50)
+    render_line.defer($('pixels2'), 51, 75)
+    render_line.defer($('pixels3'), 76, 100)
+  }
+  function render_line(container, line_number, last_line_number) {
+    html = "";
+    for (var x = 0; x < <%= @width %>; x++) {
+      html += '<p class="x-' + x + ' y-' + line_number + '" />'
+    }    
+    container.insert(html, {position : 'bottom'})
+    if (line_number + 1 < last_line_number) {
+      render_line.defer(container, line_number + 1, last_line_number)
+    } else if (last_line_number == 100) {
+      $('please-wait').style.visibility = "hidden";
+      $('description').show();
+    }
+  }
+  window.onload = render_pixels;
+</script>
