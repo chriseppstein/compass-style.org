@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Compass: Pixelations for your Enjoyment</title>
+    <%= javascript_include_tag :defaults %>
+    <%= stylesheet_link_tag "application", "pixelations/base" %>
+    <%= stylesheet_link_tag pixelations_stylesheet_path(@stylesheet), :title => @stylesheet.title %>
+    <% for alternate in @alternate_stylesheets %>
+    <link rel="alternate stylesheet" type="text/css" href="<%= pixelations_stylesheet_path(alternate)%>" title="<%= alternate.title %>" />
+    <% end %>
+  </head>
+  <body id="pixelations">
+    <div id="main" class="wrap">
+      <div id="content">
+        <%=  yield %>
+      </div>
+      <div id="layout_footer" />
+    </div>
+    <div id="footer">
+      <div class="wrap">
+        This stylesheet is built on
+        <%= link_to "Compass", "http://github.com/chriseppstein/compass/" %>.
+      </div>
+    </div>
+    <%= analytics_tag %>
+  </body>
+</html>

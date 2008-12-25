@@ -9,18 +9,37 @@
     :height 1px
     :background-color #fff
 
+#pixelation
+  :background-color #ccc
+  :border 3px solid #777
+  :position relative
+  h2
+    :text-align center
+  #pixel-info
+    :position absolute
+    :right 0px
+    :top 3em
+    :margin-right 2em
 #container
   :width 100px
-  :margin 5em auto 2em
+  :margin 2em auto 2em
   :padding 1em
   :border 3px solid #aaa
 .pixelated
   +create-pixels
   +clearfix
-
+p#please-wait
+  :width 100px
+  :height 100px
+  :margin 0
 p#description, p#please-wait
   :text-align center
 
 body#pixelations
   #footer
     :text-align center
+  #make-your-own
+    textarea
+      :width 638px
+      :height 200px
+      :margin 0 auto

@@ -1,24 +1,35 @@
-<p id="please-wait">
-  Rendering Pixels.<br/>
-  Please Wait.
-</p>
+<h1>Sass Pixelations</h1>
+<div id="pixelation">
+<h2><%= @stylesheet.title %></h2>
+<div id="pixel-info" style="display: none;">
+</div>
 <div id="container">
-<div id="pixels0" class="pixelated">
+  <p id="please-wait">
+    Rendering Pixels.<br/>
+    Please Wait.
+  </p>
+<div id="pixels0" class="pixelated" style="display:none;">
 </div>
-<div id="pixels1" class="pixelated">
+<div id="pixels1" class="pixelated" style="display:none;">
 </div>
-<div id="pixels2" class="pixelated">
+<div id="pixels2" class="pixelated" style="display:none;">
 </div>
-<div id="pixels3" class="pixelated">
+<div id="pixels3" class="pixelated" style="display:none;">
 </div>
 </div>
-<p id="description" style="display: none;">
+<p id="description">
 Above there are ten thousand DOM elements.<br/>
-Each one has been styled with CSS generated from a Sass Stylesheet.<br/>
-This is a very inefficient way to transmit pictures.<br/>
-<br/>
-Use your browser's alternate stylesheet feature to see other designs.
+Each one has been styled with CSS generated from a Sass Stylesheet.
 </p>
+</div>
+
+<div id="make-your-own">
+<h2>Stylesheet for this Pixelation</h2>
+<p>Feel free to edit it and see the changes</p>
+<textarea id="stylesheet">
+<%= @stylesheet.sass %>
+</textarea>
+</div>
 
 <script type="text/javascript">
   function render_pixels() {
@@ -26,6 +37,25 @@ Use your browser's alternate stylesheet feature to see other designs.
     render_line.defer($('pixels1'), 26, 50)
     render_line.defer($('pixels2'), 51, 75)
     render_line.defer($('pixels3'), 76, 100)
+  }
+  function mouse_over_pixel(event) {
+    var info = $('pixel-info');
+    info.style.display = "block";
+    var information = event.element().inspect();
+    if (info['innerText']) {
+      info.innerText = information
+    } else {
+      info.textContent = information
+    }
+  }
+  function hide_pixel_info(event) {
+    $('pixel-info').hide();
+  }
+  function attach_hover_behavior() {
+    $$('.pixelated').each(function(e){
+      e.observe('mouseover', mouse_over_pixel)
+      e.observe('mouseout', hide_pixel_info)
+    });
   }
   function render_line(container, line_number, last_line_number) {
     html = "";
@@ -36,8 +66,11 @@ Use your browser's alternate stylesheet feature to see other designs.
     if (line_number + 1 < last_line_number) {
       render_line.defer(container, line_number + 1, last_line_number)
     } else if (last_line_number == 100) {
-      $('please-wait').style.visibility = "hidden";
-      $('description').show();
+      $('please-wait').hide();
+      $$('.pixelated').each(function(e){
+        e.show();
+      });
+      attach_hover_behavior.defer();
     }
   }
   window.onload = render_pixels;
