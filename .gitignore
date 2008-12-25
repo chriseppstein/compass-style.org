@@ -1,3 +1,4 @@
 site/db/*.sqlite3
 site/public/stylesheets
 site/log
+._*
