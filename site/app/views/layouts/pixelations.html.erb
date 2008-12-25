@@ -4,7 +4,9 @@
     <title>Compass: Pixelations for your Enjoyment</title>
     <%= javascript_include_tag :defaults %>
     <%= stylesheet_link_tag "application", "pixelations/base" %>
-    <%= stylesheet_link_tag pixelations_stylesheet_path(@stylesheet), :title => @stylesheet.title %>
+    <style id="pixelation-styles" type="text/css">
+      <%= @stylesheet.css %>
+    </style>
     <% for alternate in @alternate_stylesheets %>
     <link rel="alternate stylesheet" type="text/css" href="<%= pixelations_stylesheet_path(alternate)%>" title="<%= alternate.title %>" />
     <% end %>

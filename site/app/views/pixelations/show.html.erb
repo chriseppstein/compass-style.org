@@ -29,24 +29,50 @@ Each one has been styled with CSS generated from a Sass Stylesheet.
 <textarea id="stylesheet">
 <%= @stylesheet.sass %>
 </textarea>
+<div id="error"></div>
 </div>
 
 <script type="text/javascript">
+  function updatePixelationStyles(transport) {
+    setInnerText($('pixelation-styles'), transport.responseText);
+    clearCompilationError();
+  }
+
+  function clearCompilationError() {
+    $('error').removeClassName("active");
+    setInnerText($('error'), "");      
+  }
+  function displayCompilationError(transport) {
+    setInnerText($('error'), "Syntax Error: "+transport.responseText);  
+    $('error').addClassName("active");
+  }
+  new Form.Element.Observer('stylesheet', 1, function(element, value) {
+    new Ajax.Request(<%= compile_pixelations_stylesheets_path.to_json %>, {
+      parameters : 'sass='+escape(value),
+      onSuccess : updatePixelationStyles,
+      on400 : displayCompilationError
+    })
+  });
+
+  function setInnerText(element, value) {
+    if (element['innerText']) {
+      element.innerText = value;
+    } else {
+      element.textContent = value;
+    }    
+  }
+
   function render_pixels() {
     render_line.defer($('pixels0'), 0, 25)
-    render_line.defer($('pixels1'), 26, 50)
-    render_line.defer($('pixels2'), 51, 75)
-    render_line.defer($('pixels3'), 76, 100)
+    render_line.defer($('pixels1'), 25, 50)
+    render_line.defer($('pixels2'), 50, 75)
+    render_line.defer($('pixels3'), 75, 100)
   }
   function mouse_over_pixel(event) {
     var info = $('pixel-info');
     info.style.display = "block";
     var information = event.element().inspect();
-    if (info['innerText']) {
-      info.innerText = information
-    } else {
-      info.textContent = information
-    }
+    setInnerText(info, information)
   }
   function hide_pixel_info(event) {
     $('pixel-info').hide();

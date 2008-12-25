@@ -36,9 +36,19 @@ p#description, p#please-wait
   :text-align center
 
 body#pixelations
+  #error
+    :margin 0.5em 0px
+    :color #000
+    :border 4px solid #fff
+    :padding 2px 3px
+    :min-height 1.5em
+    &.active
+      :background-color #faa
+      :border-color #c00
   #footer
     :text-align center
   #make-your-own
+    :margin-top 1em
     textarea
       :width 638px
       :height 200px
