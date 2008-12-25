@@ -9,9 +9,7 @@ class Stylesheet < ActiveRecord::Base
 
   def sass_engine_opts
     {
-      :filename => "#{self.url_name}.sass",
-      :line_comments => true,
-      :css_filename => "#{self.url_name}.css",
+      :style => :compact,
       :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory}
     }
   end
