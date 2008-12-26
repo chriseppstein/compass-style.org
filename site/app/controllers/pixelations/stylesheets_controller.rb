@@ -1,4 +1,5 @@
 require 'application'
+require 'timeout'
 
 class Pixelations::StylesheetsController < ApplicationController
   SASS_ENGINE_OPTS = {
@@ -30,10 +31,14 @@ class Pixelations::StylesheetsController < ApplicationController
   def compile
     @sass = params[:sass]
     begin
-      @css = Sass::Engine.new(@sass, SASS_ENGINE_OPTS).render
+      Timeout::timeout(1) {
+        @css = Sass::Engine.new(@sass, SASS_ENGINE_OPTS).render
+      }
       render :text => @css, :layout => false
     rescue Sass::SyntaxError => e
-      render :text => e.message, :status => 400, :layout => false
+      render :text => "Syntax Error: #{e.message}", :status => 400, :layout => false
+    rescue Timeout::Error
+      render :text => "Sorry: Sass Compilation is taking too long.", :status => 400, :layout => false
     end
   end
 

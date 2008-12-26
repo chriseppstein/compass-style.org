@@ -74,7 +74,7 @@ This area has been styled with CSS generated from a Sass Stylesheet.
     setInnerText($('error'), "");      
   }
   function displayCompilationError(transport) {
-    setInnerText($('error'), "Syntax Error: "+transport.responseText);  
+    setInnerText($('error'), transport.responseText);  
     $('error').addClassName("active");
   }
   new Form.Element.Observer('stylesheet', 1, function(element, value) {
