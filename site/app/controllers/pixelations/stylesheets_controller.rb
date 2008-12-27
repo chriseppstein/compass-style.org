@@ -3,7 +3,7 @@ require 'timeout'
 
 class Pixelations::StylesheetsController < ApplicationController
   SASS_ENGINE_OPTS = {
-    :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory}
+    :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory} + ["#{RAILS_ROOT}/app/stylesheets/pixelations"]
   }
   layout false
 

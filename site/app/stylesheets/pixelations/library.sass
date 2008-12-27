@@ -1,0 +1,50 @@
+=vertical-gradient(!height, !start_color, !end_color)
+  @for !y from 0 to !height
+    !color = color_step(!start_color, !end_color, !y / !height)
+    +horizontal-line(!y, !color)
+
+=horizontal-gradient(!width, !start_color, !end_color)
+  @for !x from 0 to !width
+    !color = color_step(!start_color, !end_color, !x / !width)
+    +vertical-line(!x, !color)
+
+=horizontal-line(!y, !color)
+  .y-#{!y}
+    :background-color= !color
+
+=vertical-line(!x, !color)
+  .x-#{!x}
+    :background-color= !color
+
+=point(!x, !y, !color)
+  .x-#{!x}.y-#{!y}
+    :background-color= !color
+
+=fill(!color)
+  p
+    :background-color= !color
+
+=line(!from_x, !from_y, !to_x, !to_y, !color)
+  @if !from_x > !to_x
+    +line(!to_x, !to_y, !from_x, !from_y, !color)
+  @else
+    @if !from_x == !to_x
+      @for !y from !from_y through !to_y
+        +point(!from_x, !y, !color)
+    @else
+      !slope = (!to_y - !from_y) / (!to_x - !from_x)
+      !last_y = !from_y
+      @for !x from !from_x through !to_x
+        !incr_from_y = !last_y
+        !incr_to_y = round(!from_y + ((!x - !from_x) * !slope))
+        @if !incr_from_y > !incr_to_y
+          !temp_y = !incr_to_y
+          !incr_to_y = !incr_from_y
+          !incr_from_y = !temp_y
+        @for !y from !incr_from_y to !incr_to_y
+          +point(!x, !y, !color)
+          !last_y = !y
+        @if !incr_from_y == !incr_to_y
+          +point(!x, !incr_from_y, !color)
+        
+
