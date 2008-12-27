@@ -31,7 +31,7 @@ class Pixelations::StylesheetsController < ApplicationController
   def compile
     @sass = params[:sass]
     begin
-      Timeout::timeout(1) {
+      Timeout::timeout(1.5) {
         @css = Sass::Engine.new(@sass, SASS_ENGINE_OPTS).render
       }
       render :text => @css, :layout => false
