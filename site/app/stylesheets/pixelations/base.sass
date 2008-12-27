@@ -18,7 +18,7 @@
   #pixel-info
     :position absolute
     :right 0px
-    :top 3em
+    :top 4.3em
     :margin-right 2em
 #container
   :width 100px
@@ -48,7 +48,7 @@ body#pixelations
   #zoom
     +clearfix
     .pixelated
-      :width 60px
+      :width = 12px * 9
       :float right
       :border
         :bottom 2px solid black
@@ -59,6 +59,8 @@ body#pixelations
         :border
           :top 2px solid black
           :left 2px solid black
+    #deselect-control, #select-message
+      :text-align right
   #footer
     :text-align center
   #make-your-own
