@@ -1,0 +1,99 @@
+<table class="highlighttable"><tr><td class="linenos"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49</pre></td><td class="code"><div class="highlight"><pre><span class="nf">=vertical-gradient</span><span class="p">(</span><span class="nv">!height</span><span class="o">,</span> <span class="nv">!start_color</span><span class="o">,</span> <span class="nv">!end_color</span><span class="p">)</span>
+  <span class="kn">@for</span> <span class="nv">!y</span> <span class="kn">from</span> <span class="nt">0</span> <span class="kn">to</span> <span class="nv">!height</span>
+    <span class="nv">!color</span> <span class="o">=</span> <span class="nt">color_step</span><span class="p">(</span><span class="nv">!start_color</span><span class="o">,</span> <span class="nv">!end_color</span><span class="o">,</span> <span class="nv">!y</span> <span class="o">/</span> <span class="nv">!height</span><span class="p">)</span>
+    <span class="nf">+horizontal-line</span><span class="p">(</span><span class="nv">!y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+
+<span class="nf">=horizontal-gradient</span><span class="p">(</span><span class="nv">!width</span><span class="o">,</span> <span class="nv">!start_color</span><span class="o">,</span> <span class="nv">!end_color</span><span class="p">)</span>
+  <span class="kn">@for</span> <span class="nv">!x</span> <span class="kn">from</span> <span class="nt">0</span> <span class="kn">to</span> <span class="nv">!width</span>
+    <span class="nv">!color</span> <span class="o">=</span> <span class="nt">color_step</span><span class="p">(</span><span class="nv">!start_color</span><span class="o">,</span> <span class="nv">!end_color</span><span class="o">,</span> <span class="nv">!x</span> <span class="o">/</span> <span class="nv">!width</span><span class="p">)</span>
+    <span class="nf">+vertical-line</span><span class="p">(</span><span class="nv">!x</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+
+<span class="nf">=horizontal-line</span><span class="p">(</span><span class="nv">!y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+  <span class="nc">.y-</span><span class="si">#{!y}</span>
+    <span class="o">:</span><span class="k">background-color</span><span class="o">=</span> <span class="nv">!color</span>
+
+<span class="nf">=vertical-line</span><span class="p">(</span><span class="nv">!x</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+  <span class="nc">.x-</span><span class="si">#{!x}</span>
+    <span class="o">:</span><span class="k">background-color</span><span class="o">=</span> <span class="nv">!color</span>
+
+<span class="nf">=point</span><span class="p">(</span><span class="nv">!x</span><span class="o">,</span> <span class="nv">!y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+  <span class="nc">.x-</span><span class="si">#{!x}</span><span class="nc">.y-</span><span class="si">#{!y}</span>
+    <span class="o">:</span><span class="k">background-color</span><span class="o">=</span> <span class="nv">!color</span>
+
+<span class="nf">=fill</span><span class="p">(</span><span class="nv">!color</span><span class="p">)</span>
+  <span class="err">p</span>
+    <span class="o">:</span><span class="k">background-color</span><span class="o">=</span> <span class="nv">!color</span>
+
+<span class="nf">=line</span><span class="p">(</span><span class="nv">!from_x</span><span class="o">,</span> <span class="nv">!from_y</span><span class="o">,</span> <span class="nv">!to_x</span><span class="o">,</span> <span class="nv">!to_y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+  <span class="kn">@if</span> <span class="nv">!from_x</span> <span class="o">&gt;</span> <span class="nv">!to_x</span>
+    <span class="nf">+line</span><span class="p">(</span><span class="nv">!to_x</span><span class="o">,</span> <span class="nv">!to_y</span><span class="o">,</span> <span class="nv">!from_x</span><span class="o">,</span> <span class="nv">!from_y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+  <span class="kn">@else</span>
+    <span class="kn">@if</span> <span class="nv">!from_x</span> <span class="o">==</span> <span class="nv">!to_x</span>
+      <span class="kn">@for</span> <span class="nv">!y</span> <span class="kn">from</span> <span class="nv">!from_y</span> <span class="nt">through</span> <span class="nv">!to_y</span>
+        <span class="nf">+point</span><span class="p">(</span><span class="nv">!from_x</span><span class="o">,</span> <span class="nv">!y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+    <span class="kn">@else</span>
+      <span class="nv">!slope</span> <span class="o">=</span> <span class="p">(</span><span class="nv">!to_y</span> <span class="nt">-</span> <span class="nv">!from_y</span><span class="o">)</span> <span class="o">/</span> <span class="p">(</span><span class="nv">!to_x</span> <span class="nt">-</span> <span class="nv">!from_x</span><span class="p">)</span>
+      <span class="nv">!last_y</span> <span class="o">=</span> <span class="nv">!from_y</span>
+      <span class="kn">@for</span> <span class="nv">!x</span> <span class="kn">from</span> <span class="nv">!from_x</span> <span class="nt">through</span> <span class="nv">!to_x</span>
+        <span class="nv">!incr_from_y</span> <span class="o">=</span> <span class="nv">!last_y</span>
+        <span class="nv">!incr_to_y</span> <span class="o">=</span> <span class="nt">round</span><span class="p">(</span><span class="nv">!from_y</span> <span class="o">+</span> <span class="p">((</span><span class="nv">!x</span> <span class="nt">-</span> <span class="nv">!from_x</span><span class="o">)</span> <span class="o">*</span> <span class="nv">!slope</span><span class="o">)</span><span class="p">)</span>
+        <span class="kn">@if</span> <span class="nv">!incr_from_y</span> <span class="o">&gt;</span> <span class="nv">!incr_to_y</span>
+          <span class="nv">!temp_y</span> <span class="o">=</span> <span class="nv">!incr_to_y</span>
+          <span class="nv">!incr_to_y</span> <span class="o">=</span> <span class="nv">!incr_from_y</span>
+          <span class="nv">!incr_from_y</span> <span class="o">=</span> <span class="nv">!temp_y</span>
+        <span class="kn">@for</span> <span class="nv">!y</span> <span class="kn">from</span> <span class="nv">!incr_from_y</span> <span class="kn">to</span> <span class="nv">!incr_to_y</span>
+          <span class="nf">+point</span><span class="p">(</span><span class="nv">!x</span><span class="o">,</span> <span class="nv">!y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+          <span class="nv">!last_y</span> <span class="o">=</span> <span class="nv">!y</span>
+        <span class="kn">@if</span> <span class="nv">!incr_from_y</span> <span class="o">==</span> <span class="nv">!incr_to_y</span>
+          <span class="nf">+point</span><span class="p">(</span><span class="nv">!x</span><span class="o">,</span> <span class="nv">!incr_from_y</span><span class="o">,</span> <span class="nv">!color</span><span class="p">)</span>
+        
+</pre></div>
+</td></tr></table>
