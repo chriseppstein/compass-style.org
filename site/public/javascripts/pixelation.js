@@ -21,10 +21,7 @@ function setInnerText(element, value) {
 }
 
 function render_pixels() {
-  render_line.defer($('pixels0'), 0, 25)
-  render_line.defer($('pixels1'), 25, 50)
-  render_line.defer($('pixels2'), 50, 75)
-  render_line.defer($('pixels3'), 75, 100)
+  render_line.defer($('pixels'), 0, 100)
 }
 
 var x_matcher = /x-(\d\d?)/;
@@ -93,11 +90,13 @@ function attach_interactive_behaviors() {
   });
 }
 function render_line(container, line_number, last_line_number) {
+  var line_element = document.createElement("div");
   html = "";
   for (var x = 0; x < 100; x++) {
     html += '<p class="x-' + x + ' y-' + line_number + '" />'
-  }    
-  container.insert(html, {position : 'bottom'})
+  }
+  line_element.innerHTML = html;
+  container.insert(line_element, {position : 'bottom'})
   if (line_number + 1 < last_line_number) {
     render_line.defer(container, line_number + 1, last_line_number)
   } else if (last_line_number == 100) {
