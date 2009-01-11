@@ -2,6 +2,8 @@ require 'application'
 require 'timeout'
 
 class Pixelations::StylesheetsController < ApplicationController
+  class CompilationTimeout < StandardError
+  end
   SASS_ENGINE_OPTS = {
     :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory} + ["#{RAILS_ROOT}/app/stylesheets/pixelations"]
   }
@@ -31,13 +33,13 @@ class Pixelations::StylesheetsController < ApplicationController
   def compile
     @sass = params[:sass]
     begin
-      Timeout::timeout(1.5) {
+      Timeout::timeout(1.5, CompilationTimeout) do
         @css = Sass::Engine.new(@sass, SASS_ENGINE_OPTS).render
-      }
+      end
       render :text => @css, :layout => false
     rescue Sass::SyntaxError => e
       render :text => "Syntax Error: #{e.message}", :status => 400, :layout => false
-    rescue Timeout::Error
+    rescue CompilationTimeout
       render :text => "Sorry: Sass Compilation is taking too long.", :status => 400, :layout => false
     end
   end
