@@ -1,75 +1,122 @@
-<table class="highlighttable"><tr><td class="linenos"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <span class="nn">compass/utilities/general/reset.sass</span>
+<table class="highlighttable"><tr><td class="linenos"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <span class="nn">compass/utilities/general/reset.sass</span>
 <span class="k">@import</span> <span class="nn">compass/utilities/general/clearfix.sass</span>
+<span class="k">@import</span> <span class="nn">compass/utilities/lists.sass</span>
+<span class="k">@import</span> <a href="/hl/partials/_base.sass" class="import"><span class="nn">partials/base.sass</span></a>
+<span class="k">@import</span> <span class="nn">blueprint/modules/grid.sass</span>
 
 <span class="nf">=create-pixels</span><span class="p">(</span><span class="nv">!bg_color</span> <span class="o">=</span> <span class="nl">#fff</span><span class="o">,</span> <span class="nv">!pixel_selector</span> <span class="o">=</span> <span class="s2">&quot;p&quot;</span><span class="p">)</span>
   <span class="si">#{!pixel_selector}</span>
@@ -80,6 +127,8 @@
     <span class="o">:</span><span class="k">background-color</span> <span class="mh">#fff</span>
 
 <span class="nl">#pixelation</span>
+  <span class="nf">+column</span><span class="p">(</span><span class="nt">9</span><span class="p">)</span>
+  <span class="o">:</span><span class="k">width</span> <span class="m">633px</span>
   <span class="o">:</span><span class="k">background-color</span> <span class="mh">#ccc</span>
   <span class="o">:</span><span class="k">border</span> <span class="m">3px</span> <span class="k">solid</span> <span class="mh">#777</span>
   <span class="o">:</span><span class="k">position</span> <span class="k">relative</span>
@@ -134,10 +183,49 @@
   <span class="nl">#footer</span>
     <span class="o">:</span><span class="k">text-align</span> <span class="k">center</span>
   <span class="nl">#make-your-own</span>
+    <span class="nf">+column</span><span class="p">(</span><span class="nt">9</span><span class="p">)</span>
     <span class="o">:</span><span class="k">margin-top</span> <span class="m">1em</span>
     <span class="n">textarea</span>
       <span class="o">:</span><span class="k">width</span> <span class="m">638px</span>
       <span class="o">:</span><span class="k">height</span> <span class="m">200px</span>
       <span class="o">:</span><span class="k">margin</span> <span class="m">0</span> <span class="k">auto</span>
+  <span class="nl">#faq</span>
+    <span class="nf">+reset-box-model</span>
+    <span class="nf">+column</span><span class="p">(</span><span class="nt">9</span><span class="p">)</span>
+    <span class="nf">+no-bullets</span>
+    <span class="o">:</span><span class="k">margin-bottom</span> <span class="m">3em</span>
+    <span class="o">:</span><span class="k">position</span> <span class="k">relative</span>
+    <span class="nt">li</span>
+      <span class="nf">+column</span><span class="p">(</span><span class="nt">3</span><span class="p">)</span>
+      <span class="nf">+prepend</span><span class="p">(</span><span class="nt">6</span><span class="p">)</span>
+      <span class="nt">p</span>
+        <span class="nf">+column</span><span class="p">(</span><span class="nt">6</span><span class="p">)</span>
+        <span class="o">:</span><span class="k">margin-right</span> <span class="m">210px</span>
+        <span class="o">:</span><span class="k">padding-right</span> <span class="m">30px</span>
+        <span class="o">:</span><span class="k">display</span> <span class="k">none</span>
+        <span class="o">:</span><span class="k">position</span> <span class="k">absolute</span>
+        <span class="o">:</span><span class="k">top</span> <span class="m">0px</span>
+        <span class="o">:</span><span class="k">left</span> <span class="m">0px</span>
+        <span class="o">:</span><span class="k">min-height</span> <span class="m">7em</span>
+      <span class="nd">&amp;:first-child</span><span class="o">,</span>
+      <span class="nd">&amp;:hover</span>
+        <span class="err">a</span>
+          <span class="o">:</span><span class="k">font-weight</span> <span class="k">bold</span>
+        <span class="err">p</span> 
+          <span class="o">:</span><span class="k">display</span> <span class="k">block</span>
+          <span class="err">a</span>
+            <span class="o">:</span><span class="k">font-weight</span> <span class="k">normal</span>
+    <span class="nd">&amp;:hover</span>
+      <span class="nt">li</span><span class="o">:</span><span class="nt">first-child</span>
+        <span class="err">p</span>
+          <span class="o">:</span><span class="k">display</span> <span class="k">none</span>
+        <span class="nd">&amp;:hover</span> <span class="err">p</span>
+          <span class="o">:</span><span class="k">display</span> <span class="k">block</span>
+      <span class="nt">li</span><span class="o">:</span><span class="nt">first-child</span>
+        <span class="err">a</span>
+          <span class="o">:</span><span class="k">font-weight</span> <span class="k">normal</span>
+        <span class="nd">&amp;:hover</span> <span class="err">a</span>
+          <span class="o">:</span><span class="k">font-weight</span> <span class="k">bold</span>
+      
 </pre></div>
 </td></tr></table>

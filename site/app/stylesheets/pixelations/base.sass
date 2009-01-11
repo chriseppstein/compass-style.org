@@ -1,5 +1,8 @@
 @import compass/utilities/general/reset.sass
 @import compass/utilities/general/clearfix.sass
+@import compass/utilities/lists.sass
+@import partials/base.sass
+@import blueprint/modules/grid.sass
 
 =create-pixels(!bg_color = #fff, !pixel_selector = "p")
   #{!pixel_selector}
@@ -10,6 +13,8 @@
     :background-color #fff
 
 #pixelation
+  +column(9)
+  :width 633px
   :background-color #ccc
   :border 3px solid #777
   :position relative
@@ -64,8 +69,47 @@ body#pixelations
   #footer
     :text-align center
   #make-your-own
+    +column(9)
     :margin-top 1em
     textarea
       :width 638px
       :height 200px
       :margin 0 auto
+  #faq
+    +reset-box-model
+    +column(9)
+    +no-bullets
+    :margin-bottom 3em
+    :position relative
+    li
+      +column(3)
+      +prepend(6)
+      p
+        +column(6)
+        :margin-right 210px
+        :padding-right 30px
+        :display none
+        :position absolute
+        :top 0px
+        :left 0px
+        :min-height 7em
+      &:first-child,
+      &:hover
+        a
+          :font-weight bold
+        p 
+          :display block
+          a
+            :font-weight normal
+    &:hover
+      li:first-child
+        p
+          :display none
+        &:hover p
+          :display block
+      li:first-child
+        a
+          :font-weight normal
+        &:hover a
+          :font-weight bold
+      
