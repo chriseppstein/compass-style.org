@@ -225,7 +225,20 @@ RESULT
 SOURCE
   end
 
-  # Mostly a regression test
+  # Regression tests
+
+  def test_whitespace_nuke_with_both_newlines
+    assert_equal("<p>foo</p>\n", render('%p<= "\nfoo\n"'))
+    assert_equal(<<HTML, render(<<HAML))
+<p>
+  <p>foo</p>
+</p>
+HTML
+%p
+  %p<= "\\nfoo\\n"
+HAML
+  end
+
   def test_both_case_indentation_work_with_deeply_nested_code
     result = <<RESULT
 <h2>
@@ -249,6 +262,20 @@ HAML
   - when 'other'
     %h2
       other
+HAML
+  end
+
+  def test_equals_block_with_ugly
+    assert_equal("foo\n", render(<<HAML, :ugly => true))
+= capture_haml do
+  foo
+HAML
+  end
+
+  def test_plain_equals_with_ugly
+    assert_equal("foo\nbar\n", render(<<HAML, :ugly => true))
+= "foo"
+bar
 HAML
   end
 
@@ -297,8 +324,8 @@ HAML
   end
   
   def test_string_interpolation_should_be_esaped
-    assert_equal("<p>4&amp;3</p>\n", render("%p== #{2+2}&#{2+1}", :escape_html => true))
-    assert_equal("<p>4&3</p>\n", render("%p== #{2+2}&#{2+1}", :escape_html => false))
+    assert_equal("<p>4&amp;3</p>\n", render("%p== \#{2+2}&\#{2+1}", :escape_html => true))
+    assert_equal("<p>4&3</p>\n", render("%p== \#{2+2}&\#{2+1}", :escape_html => false))
   end
 
   def test_escaped_inline_string_interpolation
@@ -333,6 +360,16 @@ HAML
 
   def test_script_ending_in_comment_should_render_when_html_is_escaped
     assert_equal("foo&amp;bar\n", render("= 'foo&bar' #comment", :escape_html => true))
+  end
+
+  def test_script_with_if_shouldnt_output
+    assert_equal(<<HTML, render(<<HAML))
+<p>foo</p>
+<p></p>
+HTML
+%p= "foo"
+%p= "bar" if false
+HAML
   end
 
   # Options tests
@@ -496,7 +533,7 @@ HAML
   def test_compile_error
     render("a\nb\n- fee)\nc")
   rescue Exception => e
-    assert_match(/^compile error\n\(test_compile_error\):3: syntax error/i, e.message)
+    assert_match(/\(test_compile_error\):3: syntax error/i, e.message)
   else
     assert(false,
            '"a\nb\n- fee)\nc" doesn\'t produce an exception!')

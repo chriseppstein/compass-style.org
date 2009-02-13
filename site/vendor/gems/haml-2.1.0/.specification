@@ -10,7 +10,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2008-12-09 00:00:00 -08:00
+date: 2009-02-13 00:00:00 -08:00
 default_executable: 
 dependencies: []
 
@@ -49,6 +49,7 @@ files:
 - lib/haml/template/plugin.rb
 - lib/haml/template.rb
 - lib/haml/util.rb
+- lib/haml/version.rb
 - lib/haml.rb
 - lib/sass
 - lib/sass/css.rb
@@ -77,6 +78,7 @@ files:
 - lib/sass/tree
 - lib/sass/tree/attr_node.rb
 - lib/sass/tree/comment_node.rb
+- lib/sass/tree/debug_node.rb
 - lib/sass/tree/directive_node.rb
 - lib/sass/tree/file_node.rb
 - lib/sass/tree/for_node.rb
@@ -127,11 +129,14 @@ files:
 - test/haml/template_test.rb
 - test/haml/templates
 - test/haml/templates/_av_partial_1.haml
+- test/haml/templates/_av_partial_1_ugly.haml
 - test/haml/templates/_av_partial_2.haml
+- test/haml/templates/_av_partial_2_ugly.haml
 - test/haml/templates/_layout_for_partial.haml
 - test/haml/templates/_partial.haml
 - test/haml/templates/_text_area.haml
 - test/haml/templates/action_view.haml
+- test/haml/templates/action_view_ugly.haml
 - test/haml/templates/breakage.haml
 - test/haml/templates/content_for_layout.haml
 - test/haml/templates/eval_suppressed.haml
@@ -148,6 +153,7 @@ files:
 - test/haml/templates/partials.haml
 - test/haml/templates/silent_script.haml
 - test/haml/templates/standard.haml
+- test/haml/templates/standard_ugly.haml
 - test/haml/templates/tag_parsing.haml
 - test/haml/templates/very_basic.haml
 - test/haml/templates/whitespace_handling.haml
@@ -209,6 +215,8 @@ files:
 - test/sass/templates/subdir/subdir.sass
 - test/sass/templates/units.sass
 - test/test_helper.rb
+- extra/haml-mode.el
+- extra/sass-mode.el
 - Rakefile
 - init.rb
 - FAQ
@@ -245,7 +253,7 @@ required_rubygems_version: !ruby/object:Gem::Requirement
 requirements: []
 
 rubyforge_project: haml
-rubygems_version: 1.3.1
+rubygems_version: 1.2.0
 signing_key: 
 specification_version: 2
 summary: An elegant, structured XHTML/XML templating engine. Comes with Sass, a similar CSS templating engine.
