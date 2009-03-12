@@ -14,8 +14,13 @@ task :create_required_directories, :rolls => [:app] do
   run "mkdir -p #{release_path}/public/stylesheets"
 end
 
+task :link_examples_directory, :rolls => [:app] do
+  run "ln -s ../../../shared/examples #{release_path}/public/examples"
+end
+
 before 'deploy:finalize_update', :move_directory
 before 'deploy:finalize_update', :create_required_directories
+before 'deploy:finalize_update', :link_examples_directory
 
 desc "After updating code we need to populate a new database.yml"
 task :after_update_code, :roles => :app do
