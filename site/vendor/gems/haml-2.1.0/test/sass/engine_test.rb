@@ -13,8 +13,8 @@ class SassEngineTest < Test::Unit::TestCase
     "!a = 1 + 2 +" => 'Expected expression, was end of text.',
     "!a = 1 + 2 + %" => 'Expected expression, was mod token.',
     "!a = foo(\"bar\"" => 'Expected rparen token, was end of text.',
-    "!a = 1 }" => 'Unexpected right_bracket token.',
-    "!a = 1 }foo\"" => 'Unexpected right_bracket token.',
+    "!a = 1 }" => 'Unexpected end_interpolation token.',
+    "!a = 1 }foo\"" => 'Unexpected end_interpolation token.',
     "!a = #aaa - \"a\"" => 'Undefined operation: "#aaaaaa minus a".',
     "!a = #aaa / \"a\"" => 'Undefined operation: "#aaaaaa div a".',
     "!a = #aaa * \"a\"" => 'Undefined operation: "#aaaaaa times a".',
@@ -72,7 +72,7 @@ class SassEngineTest < Test::Unit::TestCase
     "=a(!)" => "Mixin arguments can't be empty.",
     "=a(!foo bar)" => "Invalid variable \"!foo bar\".",
     "=foo\n  bar: baz\n+foo" => ["Attributes aren't allowed at the root of a document.", 2],
-    "a-\#{!b\n  c: d" => ["Expected right_bracket token, was end of text.", 1],
+    "a-\#{!b\n  c: d" => ["Expected end_interpolation token, was end of text.", 1],
     "=a(!b = 1, !c)" => "Required arguments must not follow optional arguments \"!c\".",
     "=a(!b = 1)\n  :a= !b\ndiv\n  +a(1,2)" => "Mixin a takes 1 argument but 2 were passed.",
     "=a(!b)\n  :a= !b\ndiv\n  +a" => "Mixin a is missing parameter !b.",
@@ -137,7 +137,13 @@ class SassEngineTest < Test::Unit::TestCase
   end
 
   def test_exception_line
-    to_render = "rule\n  :attr val\n// comment!\n\n  :broken\n"
+    to_render = <<SASS
+rule
+  :attr val
+  // comment!
+
+  :broken
+SASS
     begin
       Sass::Engine.new(to_render).render
     rescue Sass::SyntaxError => err
@@ -437,11 +443,12 @@ SASS
   end
 
   def test_interpolation
-    assert_equal("a-1 {\n  b-2: c-3; }\n", render(<<SASS))
+    assert_equal("a-1 {\n  b-2-3: c-3; }\n", render(<<SASS))
 !a = 1
 !b = 2
+!c = 3
 a-\#{!a}
-  b-\#{!b}: c-\#{!a + !b}
+  b-\#{!b}-\#{!c}: c-\#{!a + !b}
 SASS
   end
 
@@ -722,6 +729,33 @@ SASS
 
   def test_argument_error
     assert_raise(Sass::SyntaxError) { render("a\n  b = hsl(1)") }
+  end
+
+  def test_comments_at_the_top_of_a_document
+    render(<<SASS)
+//
+  This is a comment that
+  continues to the second line.
+foo
+  bar: baz
+SASS
+  end
+
+  def test_loud_comments_containing_a_comment_close
+    actual_css = render(<<SASS)
+/*
+  This is a comment that
+  continues to the second line. */
+foo
+  bar: baz
+SASS
+assert_equal(<<CSS, actual_css)
+/* 
+ * This is a comment that
+ * continues to the second line. */
+foo {
+  bar: baz; }
+CSS
   end
 
   private
