@@ -10,7 +10,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2009-02-13 00:00:00 -08:00
+date: 2009-03-07 00:00:00 -08:00
 default_executable: 
 dependencies: []
 
@@ -116,6 +116,7 @@ files:
 - test/haml/results/original_engine.xhtml
 - test/haml/results/partial_layout.xhtml
 - test/haml/results/partials.xhtml
+- test/haml/results/render_layout.xhtml
 - test/haml/results/silent_script.xhtml
 - test/haml/results/standard.xhtml
 - test/haml/results/tag_parsing.xhtml
@@ -132,6 +133,7 @@ files:
 - test/haml/templates/_av_partial_1_ugly.haml
 - test/haml/templates/_av_partial_2.haml
 - test/haml/templates/_av_partial_2_ugly.haml
+- test/haml/templates/_layout.erb
 - test/haml/templates/_layout_for_partial.haml
 - test/haml/templates/_partial.haml
 - test/haml/templates/_text_area.haml
@@ -151,6 +153,7 @@ files:
 - test/haml/templates/partial_layout.haml
 - test/haml/templates/partialize.haml
 - test/haml/templates/partials.haml
+- test/haml/templates/render_layout.haml
 - test/haml/templates/silent_script.haml
 - test/haml/templates/standard.haml
 - test/haml/templates/standard_ugly.haml
@@ -159,6 +162,7 @@ files:
 - test/haml/templates/whitespace_handling.haml
 - test/linked_rails.rb
 - test/sass
+- test/sass/css2sass_test.rb
 - test/sass/engine_test.rb
 - test/sass/functions_test.rb
 - test/sass/more_results
@@ -262,6 +266,7 @@ test_files:
 - test/haml/helper_test.rb
 - test/haml/html2haml_test.rb
 - test/haml/template_test.rb
+- test/sass/css2sass_test.rb
 - test/sass/engine_test.rb
 - test/sass/functions_test.rb
 - test/sass/plugin_test.rb
