@@ -5,7 +5,7 @@ class Pixelations::StylesheetsController < ApplicationController
   class CompilationTimeout < StandardError
   end
   SASS_ENGINE_OPTS = {
-    :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory} + ["#{RAILS_ROOT}/app/stylesheets/pixelations"]
+    :load_paths => Compass.configuration.sass_load_paths + ["#{RAILS_ROOT}/app/stylesheets/pixelations"]
   }
   layout false
 
