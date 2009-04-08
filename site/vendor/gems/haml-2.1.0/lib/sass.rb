@@ -1048,6 +1048,10 @@ require 'haml/version'
 #                               where a selector is defined to be emitted into the compiled CSS
 #                               as a comment. Useful for debugging especially when using imports
 #                               and mixins.
+#
+# [<tt>:timeout</tt>]           When set, determines the maximum number of seconds that compilation
+#                               of a Sass stylesheet can take. Fractional seconds are allowed.
+#                               NOTE: Compilation may run slightly longer than the duration specified.
 module Sass
   extend Haml::Version
 

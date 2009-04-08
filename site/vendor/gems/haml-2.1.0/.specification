@@ -10,7 +10,7 @@ autorequire:
 bindir: bin
 cert_chain: []
 
-date: 2009-03-16 00:00:00 -07:00
+date: 2009-04-14 00:00:00 -07:00
 default_executable: 
 dependencies: []
 
@@ -160,6 +160,7 @@ files:
 - test/haml/templates/tag_parsing.haml
 - test/haml/templates/very_basic.haml
 - test/haml/templates/whitespace_handling.haml
+- test/haml/util_test.rb
 - test/linked_rails.rb
 - test/sass
 - test/sass/css2sass_test.rb
@@ -266,6 +267,7 @@ test_files:
 - test/haml/helper_test.rb
 - test/haml/html2haml_test.rb
 - test/haml/template_test.rb
+- test/haml/util_test.rb
 - test/sass/css2sass_test.rb
 - test/sass/engine_test.rb
 - test/sass/functions_test.rb

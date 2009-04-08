@@ -65,7 +65,7 @@ module Haml
     #
     # Uses preserve to convert any newlines inside whitespace-sensitive tags
     # into the HTML entities for endlines.
-    # @tags@ is an array of tags to preserve.
+    # +tags+ is an array of tags to preserve.
     # It defaults to the value of the <tt>:preserve</tt> option.
     def find_and_preserve(input = '', tags = haml_buffer.options[:preserve], &block)
       return find_and_preserve(capture_haml(&block)) if block
@@ -281,7 +281,7 @@ DEPRECATION WARNING:
 The Haml #puts helper is deprecated and will be removed in version 2.4.
 Use the #haml_concat helper instead.
 END
-      haml_concat *args
+      haml_concat(*args)
     end
 
     # Outputs text directly to the Haml buffer, with the proper tabulation

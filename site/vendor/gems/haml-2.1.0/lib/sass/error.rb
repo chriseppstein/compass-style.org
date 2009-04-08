@@ -1,10 +1,14 @@
 module Sass
+  # Sass::Error is the base class for sassy error conditions.
+  class Error < StandardError
+  end
+
   # Sass::SyntaxError encapsulates information about the exception,
   # such as the line of the Sass template it was raised on
   # and the Sass file that was being parsed (if applicable).
   # It also provides a handy way to rescue only exceptions raised
   # because of a faulty template.
-  class SyntaxError < StandardError
+  class SyntaxError < Error
     # The line of the Sass template on which the exception was thrown.
     attr_accessor :sass_line
 
@@ -31,5 +35,9 @@ module Sass
     def to_s # :nodoc:
       @message
     end
+  end
+
+  # Raised by the Sass::Engine if compilation times out.
+  class Timeout < Error
   end
 end

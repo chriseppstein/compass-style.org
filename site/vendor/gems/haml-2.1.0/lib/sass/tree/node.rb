@@ -42,6 +42,7 @@ module Sass
       end
 
       def perform(environment)
+        abort_maybe!(environment)
         _perform(environment)
       rescue Sass::SyntaxError => e
         e.sass_line ||= line
@@ -50,6 +51,9 @@ module Sass
 
       protected
 
+      def abort_maybe!(environment)
+        raise Sass::Timeout.new if environment.abort?
+      end
       def _perform(environment)
         node = dup
         node.perform!(environment)
@@ -73,7 +77,7 @@ module Sass
             res << "\\" * (escapes - 1) << '#{'
           else
             res << "\\" * [0, escapes - 1].max
-            res << Script::Parser.new(scan, line, scan.pos - scan.matchedsize, filename).
+            res << Script::Parser.new(scan, line, scan.pos - scan.matched_size, filename).
               parse_interpolated.perform(environment).to_s
           end
         end
