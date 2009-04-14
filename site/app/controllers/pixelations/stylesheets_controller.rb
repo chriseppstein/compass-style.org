@@ -4,7 +4,7 @@ require 'timeout'
 class Pixelations::StylesheetsController < ApplicationController
   SASS_ENGINE_OPTS = {
     :load_paths => Compass.configuration.sass_load_paths + ["#{RAILS_ROOT}/app/stylesheets/pixelations"],
-    :timeout => 1.5
+    :timeout => 2.5
   }
   layout false
 
