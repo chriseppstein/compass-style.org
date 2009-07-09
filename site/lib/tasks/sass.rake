@@ -24,10 +24,13 @@ namespace :sass do
         puts "Checking if #{span.inner_text} exists."
         local_dir = "app/stylesheets/#{File.dirname(file)[31..-1]}"
         puts local_dir
-        if full_path = Sass::Engine.find_full_path(span.inner_text, ["app/stylesheets", local_dir])
+        begin
+          full_path = Sass::Files.find_file_to_import(span.inner_text, ["app/stylesheets", local_dir])
           puts "Found #{span.inner_text} at #{full_path}"
           wrapped = span.make(%Q{<a class="import" href="/hl/#{full_path[16..-1]}">#{span}</a>})
           span.parent.replace_child(span, wrapped)
+        rescue Sass::SyntaxError
+          #pass
         end
       end
       open(file, 'w') do |file|
