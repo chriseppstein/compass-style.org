@@ -3,7 +3,7 @@
 body#home
   :background-color #fff
   h1
-    +replace-text("/images/compass.png")
+    +replace-text("compass.png")
     :height 118px
     :margin-top 1em
   .tagline
@@ -41,11 +41,11 @@ body#home
         :repeat no-repeat
         :position left center
     li.download
-      :background-image url(/images/icons/download.png)
+      :background-image= image_url("icons/download.png")
     li.learn
-      :background-image url(/images/icons/learn.png)
+      :background-image= image_url("icons/learn.png")
     li.support
-      :background-image url(/images/icons/support.png)
+      :background-image= image_url("icons/support.png")
     li.get-involved
-      :background-image url(/images/icons/get_involved.png)
+      :background-image= image_url("icons/get_involved.png")
 
