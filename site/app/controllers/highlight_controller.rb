@@ -1,5 +1,3 @@
-require 'application'
-
 class HighlightController < ApplicationController
 
   def show

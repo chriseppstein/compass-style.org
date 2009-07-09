@@ -1,4 +1,3 @@
-require 'application'
 require 'timeout'
 
 class Pixelations::StylesheetsController < ApplicationController

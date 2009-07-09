@@ -1,5 +1,3 @@
-require 'application'
-
 class PixelationsController < ApplicationController
   def show
     @width = 100
