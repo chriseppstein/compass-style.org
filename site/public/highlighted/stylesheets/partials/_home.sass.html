@@ -46,11 +46,13 @@
 46
 47
 48
-49</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <a href="/hl/partials/_base.sass" class="import"><span class="nn">base.sass</span></a>
+49
+50</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <a href="/hl/partials/./_base.sass" class="import"><span class="nn">base.sass</span></a>
 
 <span class="nt">body</span><span class="nl">#home</span>
+  <span class="o">:</span><span class="k">background-color</span> <span class="mh">#fff</span>
   <span class="nt">h1</span>
-    <span class="nf">+replace-text</span><span class="p">(</span><span class="s2">&quot;/images/compass.png&quot;</span><span class="p">)</span>
+    <span class="nf">+replace-text</span><span class="p">(</span><span class="s2">&quot;compass.png&quot;</span><span class="p">)</span>
     <span class="o">:</span><span class="k">height</span> <span class="m">118px</span>
     <span class="o">:</span><span class="k">margin-top</span> <span class="m">1em</span>
   <span class="nc">.tagline</span>
@@ -88,12 +90,12 @@
         <span class="o">:</span><span class="k">repeat</span> <span class="k">no-repeat</span>
         <span class="o">:</span><span class="k">position</span> <span class="k">left</span> <span class="k">center</span>
     <span class="nt">li</span><span class="nc">.download</span>
-      <span class="o">:</span><span class="k">background-image</span> <span class="sx">url(/images/icons/download.png)</span>
+      <span class="o">:</span><span class="k">background-image</span><span class="o">=</span> <span class="nt">image_url</span><span class="p">(</span><span class="s2">&quot;icons/download.png&quot;</span><span class="p">)</span>
     <span class="nt">li</span><span class="nc">.learn</span>
-      <span class="o">:</span><span class="k">background-image</span> <span class="sx">url(/images/icons/learn.png)</span>
+      <span class="o">:</span><span class="k">background-image</span><span class="o">=</span> <span class="nt">image_url</span><span class="p">(</span><span class="s2">&quot;icons/learn.png&quot;</span><span class="p">)</span>
     <span class="nt">li</span><span class="nc">.support</span>
-      <span class="o">:</span><span class="k">background-image</span> <span class="sx">url(/images/icons/support.png)</span>
+      <span class="o">:</span><span class="k">background-image</span><span class="o">=</span> <span class="nt">image_url</span><span class="p">(</span><span class="s2">&quot;icons/support.png&quot;</span><span class="p">)</span>
     <span class="nt">li</span><span class="nc">.get-involved</span>
-      <span class="o">:</span><span class="k">background-image</span> <span class="sx">url(/images/icons/get_involved.png)</span>
+      <span class="o">:</span><span class="k">background-image</span><span class="o">=</span> <span class="nt">image_url</span><span class="p">(</span><span class="s2">&quot;icons/get_involved.png&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>

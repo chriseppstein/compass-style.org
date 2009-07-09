@@ -24,7 +24,7 @@
 24
 25
 26
-27</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <a href="/hl/partials/_base.sass" class="import"><span class="nn">base.sass</span></a>
+27</pre></td><td class="code"><div class="highlight"><pre><span class="k">@import</span> <a href="/hl/partials/./_base.sass" class="import"><span class="nn">base.sass</span></a>
 
 <span class="nf">+sticky-footer</span><span class="p">(</span><span class="nt">60px</span><span class="o">,</span> <span class="s2">&quot;#main&quot;</span><span class="o">,</span> <span class="s2">&quot;#layout_footer&quot;</span><span class="o">,</span> <span class="s2">&quot;#footer&quot;</span><span class="p">)</span>
 
@@ -43,7 +43,7 @@
     <span class="nt">li</span><span class="nc">.viewsource</span>
       <span class="nf">+compass-font</span>
     <span class="nt">li</span><span class="nc">.opensource</span>
-      <span class="o">:</span><span class="k">background</span> <span class="k">transparent</span> <span class="sx">url(/images/icons/opensource.png)</span> <span class="k">no-repeat</span> <span class="k">left</span> <span class="k">center</span>
+      <span class="o">:</span><span class="k">background</span> <span class="k">transparent</span> <span class="err">#{</span><span class="n">image</span><span class="err">_</span><span class="sx">url(&quot;icons/opensource.png&quot;)</span><span class="err">}</span> <span class="k">no-repeat</span> <span class="k">left</span> <span class="k">center</span>
       <span class="err">a</span>
         <span class="o">:</span><span class="k">padding-left</span> <span class="m">45px</span>
     <span class="nt">li</span><span class="nc">.dryicons</span>
