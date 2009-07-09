@@ -22,8 +22,8 @@ Rails::Initializer.run do |config|
 
   # Specify gems that this application depends on. 
   # They can then be installed with "rake gems:install" on new installations.
-  config.gem "haml", :version => '>= 2.1.0'
-  config.gem "chriseppstein-compass", :version => '>= 0.6.1', :lib => "compass", :source => "http://gems.github.com/"
+  config.gem "haml", :version => '>= 2.2.0'
+  config.gem "chriseppstein-compass", :version => '>= 0.8.6', :lib => "compass", :source => "http://gems.github.com/"
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
