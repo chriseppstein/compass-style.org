@@ -8,10 +8,7 @@ class Stylesheet < ActiveRecord::Base
   protected
 
   def sass_engine_opts
-    {
-      :style => :compact,
-      :load_paths => Compass::Frameworks::ALL.map{|f| f.stylesheets_directory} + ["#{RAILS_ROOT}/app/stylesheets/pixelations"]
-    }
+    Compass.configuration.to_sass_engine_options
   end
 
   def generate_css
