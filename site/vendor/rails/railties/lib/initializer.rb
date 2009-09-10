@@ -39,7 +39,7 @@ module Rails
         nil
       end
     end
-    
+
     def backtrace_cleaner
       @@backtrace_cleaner ||= begin
         # Relies on ActiveSupport, so we have to lazy load to postpone definition until AS has been loaded
@@ -48,8 +48,8 @@ module Rails
       end
     end
 
-    def root(*args)
-      File.join(RAILS_ROOT, *args.compact) if defined?(RAILS_ROOT)
+    def root
+      Pathname.new(RAILS_ROOT) if defined?(RAILS_ROOT)
     end
 
     def env
@@ -132,10 +132,10 @@ module Rails
       add_gem_load_paths
 
       require_frameworks
-      preload_frameworks
       set_autoload_paths
       add_plugin_load_paths
       load_environment
+      preload_frameworks
 
       initialize_encoding
       initialize_database
@@ -148,7 +148,6 @@ module Rails
 
       initialize_dependency_mechanism
       initialize_whiny_nils
-      initialize_temporary_session_directory
 
       initialize_time_zone
       initialize_i18n
@@ -156,7 +155,11 @@ module Rails
       initialize_framework_settings
       initialize_framework_views
 
+      initialize_metal
+
       add_support_load_paths
+
+      check_for_unbuilt_gems
 
       load_gems
       load_plugins
@@ -166,10 +169,17 @@ module Rails
       load_gems
       check_gem_dependencies
 
+      # bail out if gems are missing - note that check_gem_dependencies will have
+      # already called abort() unless $gems_rake_task is set
+      return unless gems_dependencies_loaded
+
       load_application_initializers
 
       # the framework is now fully initialized
       after_initialize
+
+      # Setup database middleware after initializers have run
+      initialize_database_middleware
 
       # Prepare dispatcher callbacks and run 'prepare' callbacks
       prepare_dispatcher
@@ -269,7 +279,7 @@ module Rails
         configuration.frameworks.each do |framework|
           # String#classify and #constantize aren't available yet.
           toplevel = Object.const_get(framework.to_s.gsub(/(?:^|_)(.)/) { $1.upcase })
-          toplevel.load_all!
+          toplevel.load_all! if toplevel.respond_to?(:load_all!)
         end
       end
     end
@@ -293,7 +303,28 @@ module Rails
     end
 
     def load_gems
-      @configuration.gems.each { |gem| gem.load }
+      unless $gems_rake_task
+        @configuration.gems.each { |gem| gem.load }
+      end
+    end
+
+    def check_for_unbuilt_gems
+      unbuilt_gems = @configuration.gems.select(&:frozen?).reject(&:built?)
+      if unbuilt_gems.size > 0
+        # don't print if the gems:build rake tasks are being run
+        unless $gems_build_rake_task
+          abort <<-end_error
+The following gems have native components that need to be built
+  #{unbuilt_gems.map { |gem| "#{gem.name}  #{gem.requirement}" } * "\n  "}
+
+You're running:
+  ruby #{Gem.ruby_version} at #{Gem.ruby}
+  rubygems #{Gem::RubyGemsVersion} at #{Gem.path * ', '}
+
+Run `rake gems:build` to build the unbuilt gems.
+          end_error
+        end
+      end
     end
 
     def check_gem_dependencies
@@ -301,7 +332,7 @@ module Rails
       if unloaded_gems.size > 0
         @gems_dependencies_loaded = false
         # don't print if the gems rake tasks are being run
-        unless $rails_gem_installer
+        unless $gems_rake_task
           abort <<-end_error
 Missing these required gems:
   #{unloaded_gems.map { |gem| "#{gem.name}  #{gem.requirement}" } * "\n  "}
@@ -368,15 +399,14 @@ Run `rake gems:install` to install the missing gems.
 
     def load_view_paths
       if configuration.frameworks.include?(:action_view)
-        if configuration.cache_classes
-          ActionController::Base.view_paths.load if configuration.frameworks.include?(:action_controller)
-          ActionMailer::Base.template_root.load if configuration.frameworks.include?(:action_mailer)
-        end
+        ActionController::Base.view_paths.load! if configuration.frameworks.include?(:action_controller)
+        ActionMailer::Base.view_paths.load! if configuration.frameworks.include?(:action_mailer)
       end
     end
 
     # Eager load application classes
     def load_application_classes
+      return if $rails_rake_task
       if configuration.cache_classes
         configuration.eager_load_paths.each do |load_path|
           matcher = /\A#{Regexp.escape(load_path)}(.*)\.rb\Z/
@@ -409,9 +439,27 @@ Run `rake gems:install` to install the missing gems.
       end
     end
 
+    def initialize_database_middleware
+      if configuration.frameworks.include?(:active_record)
+        if configuration.frameworks.include?(:action_controller) &&
+            ActionController::Base.session_store.name == 'ActiveRecord::SessionStore'
+          configuration.middleware.insert_before :"ActiveRecord::SessionStore", ActiveRecord::ConnectionAdapters::ConnectionManagement
+          configuration.middleware.insert_before :"ActiveRecord::SessionStore", ActiveRecord::QueryCache
+        else
+          configuration.middleware.use ActiveRecord::ConnectionAdapters::ConnectionManagement
+          configuration.middleware.use ActiveRecord::QueryCache
+        end
+      end
+    end
+
     def initialize_cache
       unless defined?(RAILS_CACHE)
         silence_warnings { Object.const_set "RAILS_CACHE", ActiveSupport::Cache.lookup_store(configuration.cache_store) }
+
+        if RAILS_CACHE.respond_to?(:middleware)
+          # Insert middleware to setup and teardown local cache for each request
+          configuration.middleware.insert_after(:"ActionController::Failsafe", RAILS_CACHE.middleware)
+        end
       end
     end
 
@@ -472,9 +520,9 @@ Run `rake gems:install` to install the missing gems.
     # set to use Configuration#view_path.
     def initialize_framework_views
       if configuration.frameworks.include?(:action_view)
-        view_path = ActionView::PathSet::Path.new(configuration.view_path, false)
-        ActionMailer::Base.template_root ||= view_path if configuration.frameworks.include?(:action_mailer)
-        ActionController::Base.view_paths = view_path if configuration.frameworks.include?(:action_controller) && ActionController::Base.view_paths.empty?
+        view_path = ActionView::PathSet.type_cast(configuration.view_path)
+        ActionMailer::Base.template_root  = view_path if configuration.frameworks.include?(:action_mailer) && ActionMailer::Base.view_paths.blank?
+        ActionController::Base.view_paths = view_path if configuration.frameworks.include?(:action_controller) && ActionController::Base.view_paths.blank?
       end
     end
 
@@ -486,7 +534,7 @@ Run `rake gems:install` to install the missing gems.
 
       ActionController::Routing.controller_paths += configuration.controller_paths
       ActionController::Routing::Routes.add_configuration_file(configuration.routes_configuration_file)
-      ActionController::Routing::Routes.reload
+      ActionController::Routing::Routes.reload!
     end
 
     # Sets the dependency loading mechanism based on the value of
@@ -501,22 +549,20 @@ Run `rake gems:install` to install the missing gems.
       require('active_support/whiny_nil') if configuration.whiny_nils
     end
 
-    def initialize_temporary_session_directory
-      if configuration.frameworks.include?(:action_controller)
-        session_path = "#{configuration.root_path}/tmp/sessions/"
-        ActionController::Base.session_options[:tmpdir] = File.exist?(session_path) ? session_path : Dir::tmpdir
-      end
-    end
-
     # Sets the default value for Time.zone, and turns on ActiveRecord::Base#time_zone_aware_attributes.
     # If assigned value cannot be matched to a TimeZone, an exception will be raised.
     def initialize_time_zone
       if configuration.time_zone
         zone_default = Time.__send__(:get_zone, configuration.time_zone)
+
         unless zone_default
-          raise %{Value assigned to config.time_zone not recognized. Run "rake -D time" for a list of tasks for finding appropriate time zone names.}
+          raise \
+            'Value assigned to config.time_zone not recognized.' +
+            'Run "rake -D time" for a list of tasks for finding appropriate time zone names.'
         end
+
         Time.zone_default = zone_default
+
         if configuration.frameworks.include?(:active_record)
           ActiveRecord::Base.time_zone_aware_attributes = true
           ActiveRecord::Base.default_timezone = :utc
@@ -524,7 +570,7 @@ Run `rake gems:install` to install the missing gems.
       end
     end
 
-    # Set the i18n configuration from config.i18n but special-case for the load_path which should be 
+    # Set the i18n configuration from config.i18n but special-case for the load_path which should be
     # appended to what's already set instead of overwritten.
     def initialize_i18n
       configuration.i18n.each do |setting, value|
@@ -534,6 +580,15 @@ Run `rake gems:install` to install the missing gems.
           I18n.send("#{setting}=", value)
         end
       end
+    end
+
+    def initialize_metal
+      Rails::Rack::Metal.requested_metals = configuration.metals
+      Rails::Rack::Metal.metal_paths += plugin_loader.engine_metal_paths
+
+      configuration.middleware.insert_before(
+        :"ActionController::ParamsParser",
+        Rails::Rack::Metal, :if => Rails::Rack::Metal.metals.any?)
     end
 
     # Initializes framework-specific settings for each of the loaded frameworks
@@ -564,7 +619,7 @@ Run `rake gems:install` to install the missing gems.
     def load_application_initializers
       if gems_dependencies_loaded
         Dir["#{configuration.root_path}/config/initializers/**/*.rb"].sort.each do |initializer|
-          load initializer.sub(/^#{Regexp.escape(configuration.root_path)}\//, '')
+          load(initializer)
         end
       end
     end
@@ -573,7 +628,7 @@ Run `rake gems:install` to install the missing gems.
       return unless configuration.frameworks.include?(:action_controller)
       require 'dispatcher' unless defined?(::Dispatcher)
       Dispatcher.define_dispatcher_callbacks(configuration.cache_classes)
-      Dispatcher.new(Rails.logger).send :run_callbacks, :prepare_dispatch
+      Dispatcher.run_prepare_callbacks
     end
 
     def disable_dependency_loading
@@ -684,6 +739,11 @@ Run `rake gems:install` to install the missing gems.
     def plugins=(plugins)
       @plugins = plugins.nil? ? nil : plugins.map { |p| p.to_sym }
     end
+
+    # The list of metals to load. If this is set to <tt>nil</tt>, all metals will
+    # be loaded in alphabetical order. If this is set to <tt>[]</tt>, no metals will
+    # be loaded. Otherwise metals will be loaded in the order specified
+    attr_accessor :metals
 
     # The path to the root of the plugins directory. By default, it is in
     # <tt>vendor/plugins</tt>.
@@ -824,7 +884,8 @@ Run `rake gems:install` to install the missing gems.
 
     # Enable threaded mode. Allows concurrent requests to controller actions and
     # multiple database connections. Also disables automatic dependency loading
-    # after boot
+    # after boot, and disables reloading code on every request, as these are
+    # fundamentally incompatible with thread safety.
     def threadsafe!
       self.preload_frameworks = true
       self.cache_classes = true
@@ -876,6 +937,11 @@ Run `rake gems:install` to install the missing gems.
       end
     end
 
+    def middleware
+      require 'action_controller'
+      ActionController::Dispatcher.middleware
+    end
+
     def builtin_directories
       # Include builtins only in the development environment.
       (environment == 'development') ? Dir["#{RAILTIES_PATH}/builtin/*/"] : []
@@ -913,11 +979,11 @@ Run `rake gems:install` to install the missing gems.
         # Followed by the standard includes.
         paths.concat %w(
           app
+          app/metal
           app/models
           app/controllers
           app/helpers
           app/services
-          config
           lib
           vendor
         ).map { |dir| "#{root_path}/#{dir}" }.select { |dir| File.directory?(dir) }
@@ -932,6 +998,7 @@ Run `rake gems:install` to install the missing gems.
 
       def default_eager_load_paths
         %w(
+          app/metal
           app/models
           app/controllers
           app/helpers
@@ -1058,3 +1125,4 @@ class Rails::OrderedOptions < Array #:nodoc:
       return false
     end
 end
+

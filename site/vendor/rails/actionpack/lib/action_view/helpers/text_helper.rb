@@ -33,30 +33,31 @@ module ActionView
       end
 
       # Truncates a given +text+ after a given <tt>:length</tt> if +text+ is longer than <tt>:length</tt>
-      # (defaults to 30). The last characters will be replaced with the <tt>:omission</tt> (defaults to "...").
+      # (defaults to 30). The last characters will be replaced with the <tt>:omission</tt> (defaults to "...")
+      # for a total length not exceeding <tt>:length</tt>.
       #
       # ==== Examples
       #
       #   truncate("Once upon a time in a world far far away")
-      #   # => Once upon a time in a world f...
+      #   # => Once upon a time in a world...
       #
       #   truncate("Once upon a time in a world far far away", :length => 14)
       #   # => Once upon a...
       #
       #   truncate("And they found that many people were sleeping better.", :length => 25, "(clipped)")
-      #   # => And they found that many (clipped)
+      #   # => And they found t(clipped)
       #
-      #   truncate("And they found that many people were sleeping better.", :omission => "... (continued)", :length => 15)
-      #   # => And they found... (continued)
+      #   truncate("And they found that many people were sleeping better.", :omission => "... (continued)", :length => 25)
+      #   # => And they f... (continued)
       #
       # You can still use <tt>truncate</tt> with the old API that accepts the
       # +length+ as its optional second and the +ellipsis+ as its
       # optional third parameter:
       #   truncate("Once upon a time in a world far far away", 14)
-      #   # => Once upon a time in a world f...
+      #   # => Once upon a...
       #
-      #   truncate("And they found that many people were sleeping better.", 15, "... (continued)")
-      #   # => And they found... (continued)
+      #   truncate("And they found that many people were sleeping better.", 25, "... (continued)")
+      #   # => And they f... (continued)
       def truncate(text, *args)
         options = args.extract_options!
         unless args.empty?
@@ -107,7 +108,7 @@ module ActionView
           text
         else
           match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
-          text.gsub(/(#{match})/i, options[:highlighter])
+          text.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
         end
       end
 
@@ -234,12 +235,20 @@ module ActionView
       #
       #   textilize("Visit the Rails website "here":http://www.rubyonrails.org/.)
       #   # => "<p>Visit the Rails website <a href="http://www.rubyonrails.org/">here</a>.</p>"
-      def textilize(text)
+      #
+      #   textilize("This is worded <strong>strongly</strong>")
+      #   # => "<p>This is worded <strong>strongly</strong></p>"
+      #
+      #   textilize("This is worded <strong>strongly</strong>", :filter_html)
+      #   # => "<p>This is worded &lt;strong&gt;strongly&lt;/strong&gt;</p>"
+      #
+      def textilize(text, *options)
+        options ||= [:hard_breaks]
+
         if text.blank?
           ""
         else
-          textilized = RedCloth.new(text, [ :hard_breaks ])
-          textilized.hard_breaks = true if textilized.respond_to?(:hard_breaks=)
+          textilized = RedCloth.new(text, options)
           textilized.to_html
         end
       end
@@ -271,8 +280,8 @@ module ActionView
       end
 
       # Returns the text with all the Markdown codes turned into HTML tags.
-      # <i>This method requires BlueCloth[http://www.deveiate.org/projects/BlueCloth]
-      # to be available</i>.
+      # <i>This method requires BlueCloth[http://www.deveiate.org/projects/BlueCloth] or another
+      # Markdown library to be installed.</i>.
       #
       # ==== Examples
       #   markdown("We are using __Markdown__ now!")
@@ -288,7 +297,7 @@ module ActionView
       #   markdown('![The ROR logo](http://rubyonrails.com/images/rails.png "Ruby on Rails")')
       #   # => '<p><img src="http://rubyonrails.com/images/rails.png" alt="The ROR logo" title="Ruby on Rails" /></p>'
       def markdown(text)
-        text.blank? ? "" : BlueCloth.new(text).to_html
+        text.blank? ? "" : Markdown.new(text).to_html
       end
 
       # Returns +text+ transformed into HTML using simple formatting rules.
@@ -370,8 +379,8 @@ module ActionView
         options.reverse_merge!(:link => :all, :html => {})
 
         case options[:link].to_sym
-          when :all                         then auto_link_email_addresses(auto_link_urls(text, options[:html], &block), &block)
-          when :email_addresses             then auto_link_email_addresses(text, &block)
+          when :all                         then auto_link_email_addresses(auto_link_urls(text, options[:html], &block), options[:html], &block)
+          when :email_addresses             then auto_link_email_addresses(text, options[:html], &block)
           when :urls                        then auto_link_urls(text, options[:html], &block)
         end
       end
@@ -536,8 +545,9 @@ module ActionView
           text.gsub(AUTO_LINK_RE) do
             href = $&
             punctuation = ''
-            # detect already linked URLs
-            if $` =~ /<a\s[^>]*href="$/
+            left, right = $`, $'
+            # detect already linked URLs and URLs in the middle of a tag
+            if left =~ /<[^>]+$/ && right =~ /^[^>]*>/
               # do not change string; URL is alreay linked
               href
             else
@@ -559,7 +569,7 @@ module ActionView
 
         # Turns all email addresses into clickable links.  If a block is given,
         # each email is yielded and the result is used as the link text.
-        def auto_link_email_addresses(text)
+        def auto_link_email_addresses(text, html_options = {})
           body = text.dup
           text.gsub(/([\w\.!#\$%\-+.]+@[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)+)/) do
             text = $1
@@ -568,7 +578,7 @@ module ActionView
               text
             else
               display_text = (block_given?) ? yield(text) : text
-              %{<a href="mailto:#{text}">#{display_text}</a>}
+              mail_to text, display_text, html_options
             end
           end
         end

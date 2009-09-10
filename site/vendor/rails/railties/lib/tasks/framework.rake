@@ -80,6 +80,12 @@ namespace :rails do
   desc "Update both configs, scripts and public/javascripts from Rails"
   task :update => [ "update:scripts", "update:javascripts", "update:configs", "update:application_controller" ]
 
+  desc "Applies the template supplied by LOCATION=/path/to/template"
+  task :template do
+    require 'rails_generator/generators/applications/app/template_runner'
+    Rails::TemplateRunner.new(ENV["LOCATION"])
+  end
+
   namespace :update do
     desc "Add new scripts to the application script/ directory"
     task :scripts do
@@ -128,6 +134,7 @@ namespace :rails do
     desc "Generate dispatcher files in RAILS_ROOT/public"
     task :generate_dispatchers do
       require 'railties_path'
+      FileUtils.cp(RAILTIES_PATH + '/dispatches/config.ru', RAILS_ROOT + '/config.ru')
       FileUtils.cp(RAILTIES_PATH + '/dispatches/dispatch.fcgi', RAILS_ROOT + '/public/dispatch.fcgi')
       FileUtils.cp(RAILTIES_PATH + '/dispatches/dispatch.rb', RAILS_ROOT + '/public/dispatch.rb')
       FileUtils.cp(RAILTIES_PATH + '/dispatches/dispatch.rb', RAILS_ROOT + '/public/dispatch.cgi')

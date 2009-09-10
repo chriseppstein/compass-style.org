@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2004-2008 David Heinemeier Hansson
+# Copyright (c) 2004-2009 David Heinemeier Hansson
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -44,6 +44,7 @@ module ActionView
   autoload :Renderable, 'action_view/renderable'
   autoload :RenderablePartial, 'action_view/renderable_partial'
   autoload :Template, 'action_view/template'
+  autoload :ReloadableTemplate, 'action_view/reloadable_template'
   autoload :TemplateError, 'action_view/template_error'
   autoload :TemplateHandler, 'action_view/template_handler'
   autoload :TemplateHandlers, 'action_view/template_handlers'

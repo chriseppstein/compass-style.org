@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2004-2008 David Heinemeier Hansson
+# Copyright (c) 2004-2009 David Heinemeier Hansson
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -31,25 +31,22 @@ rescue LoadError
   end
 end
 
-gem 'rack', '~> 0.4.0'
+gem 'rack', '~> 1.0.0'
 require 'rack'
 
 module ActionController
   # TODO: Review explicit to see if they will automatically be handled by
   # the initilizer if they are really needed.
   def self.load_all!
-    [Base, CgiRequest, CgiResponse, RackRequest, RackRequest, Http::Headers, UrlRewriter, UrlWriter]
+    [Base, CGIHandler, CgiRequest, Request, Response, Http::Headers, UrlRewriter, UrlWriter]
   end
 
-  autoload :AbstractRequest, 'action_controller/request'
-  autoload :AbstractResponse, 'action_controller/response'
   autoload :Base, 'action_controller/base'
   autoload :Benchmarking, 'action_controller/benchmarking'
   autoload :Caching, 'action_controller/caching'
-  autoload :CgiRequest, 'action_controller/cgi_process'
-  autoload :CgiResponse, 'action_controller/cgi_process'
   autoload :Cookies, 'action_controller/cookies'
   autoload :Dispatcher, 'action_controller/dispatcher'
+  autoload :Failsafe, 'action_controller/failsafe'
   autoload :Filters, 'action_controller/filters'
   autoload :Flash, 'action_controller/flash'
   autoload :Helpers, 'action_controller/helpers'
@@ -57,14 +54,18 @@ module ActionController
   autoload :Integration, 'action_controller/integration'
   autoload :IntegrationTest, 'action_controller/integration'
   autoload :Layout, 'action_controller/layout'
+  autoload :MiddlewareStack, 'action_controller/middleware_stack'
   autoload :MimeResponds, 'action_controller/mime_responds'
+  autoload :ParamsParser, 'action_controller/params_parser'
   autoload :PolymorphicRoutes, 'action_controller/polymorphic_routes'
-  autoload :RackRequest, 'action_controller/rack_process'
-  autoload :RackResponse, 'action_controller/rack_process'
   autoload :RecordIdentifier, 'action_controller/record_identifier'
+  autoload :Reloader, 'action_controller/reloader'
+  autoload :Request, 'action_controller/request'
   autoload :RequestForgeryProtection, 'action_controller/request_forgery_protection'
   autoload :Rescue, 'action_controller/rescue'
   autoload :Resources, 'action_controller/resources'
+  autoload :Response, 'action_controller/response'
+  autoload :RewindableInput, 'action_controller/rewindable_input'
   autoload :Routing, 'action_controller/routing'
   autoload :SessionManagement, 'action_controller/session_management'
   autoload :StatusCodes, 'action_controller/status_codes'
@@ -72,6 +73,9 @@ module ActionController
   autoload :TestCase, 'action_controller/test_case'
   autoload :TestProcess, 'action_controller/test_process'
   autoload :Translation, 'action_controller/translation'
+  autoload :UploadedFile, 'action_controller/uploaded_file'
+  autoload :UploadedStringIO, 'action_controller/uploaded_file'
+  autoload :UploadedTempfile, 'action_controller/uploaded_file'
   autoload :UrlRewriter, 'action_controller/url_rewriter'
   autoload :UrlWriter, 'action_controller/url_rewriter'
   autoload :Verification, 'action_controller/verification'
@@ -88,15 +92,16 @@ module ActionController
   module Http
     autoload :Headers, 'action_controller/headers'
   end
-end
 
-class CGI
-  class Session
-    autoload :ActiveRecordStore, 'action_controller/session/active_record_store'
+  module Session
+    autoload :AbstractStore, 'action_controller/session/abstract_store'
     autoload :CookieStore, 'action_controller/session/cookie_store'
-    autoload :DRbStore, 'action_controller/session/drb_store'
     autoload :MemCacheStore, 'action_controller/session/mem_cache_store'
   end
+
+  # DEPRECATE: Remove CGI support
+  autoload :CgiRequest, 'action_controller/cgi_process'
+  autoload :CGIHandler, 'action_controller/cgi_process'
 end
 
 autoload :Mime, 'action_controller/mime_type'

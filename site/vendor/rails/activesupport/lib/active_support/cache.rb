@@ -10,6 +10,10 @@ module ActiveSupport
     autoload :MemCacheStore, 'active_support/cache/mem_cache_store'
     autoload :CompressedMemCacheStore, 'active_support/cache/compressed_mem_cache_store'
 
+    module Strategy
+      autoload :LocalCache, 'active_support/cache/strategy/local_cache'
+    end
+
     # Creates a new CacheStore object according to the given options.
     #
     # If no arguments are passed to this method, then a new
@@ -87,10 +91,15 @@ module ActiveSupport
     class Store
       cattr_accessor :logger
 
+      attr_reader :silence, :logger_off
+
       def silence!
         @silence = true
         self
       end
+
+      alias silence? silence
+      alias logger_off? logger_off
 
       # Fetches data from the cache, using the given key. If there is data in
       # the cache with the given key, then that data is returned.
@@ -143,13 +152,13 @@ module ActiveSupport
           log("miss", key, options)
 
           value = nil
-          seconds = Benchmark.realtime { value = yield }
+          ms = Benchmark.ms { value = yield }
 
           @logger_off = true
           write(key, value, options)
           @logger_off = false
 
-          log("write (will save #{'%.2f' % (seconds * 1000)}ms)", key, nil)
+          log('write (will save %.2fms)' % ms, key, nil)
 
           value
         end
@@ -216,8 +225,16 @@ module ActiveSupport
       end
 
       private
+        def expires_in(options)
+          expires_in = options && options[:expires_in]
+
+          raise ":expires_in must be a number" if expires_in && !expires_in.is_a?(Numeric)
+
+          expires_in || 0
+        end
+
         def log(operation, key, options)
-          logger.debug("Cache #{operation}: #{key}#{options ? " (#{options.inspect})" : ""}") if logger && !@silence && !@logger_off
+          logger.debug("Cache #{operation}: #{key}#{options ? " (#{options.inspect})" : ""}") if logger && !silence? && !logger_off?
         end
     end
   end

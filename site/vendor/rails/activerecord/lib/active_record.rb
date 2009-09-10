@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2004-2008 David Heinemeier Hansson
+# Copyright (c) 2004-2009 David Heinemeier Hansson
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -37,6 +37,8 @@ module ActiveRecord
     [Base, DynamicFinderMatch, ConnectionAdapters::AbstractAdapter]
   end
 
+  autoload :VERSION, 'active_record/version'
+
   autoload :ActiveRecordError, 'active_record/base'
   autoload :ConnectionNotEstablished, 'active_record/base'
 
@@ -44,20 +46,25 @@ module ActiveRecord
   autoload :AssociationPreload, 'active_record/association_preload'
   autoload :Associations, 'active_record/associations'
   autoload :AttributeMethods, 'active_record/attribute_methods'
+  autoload :AutosaveAssociation, 'active_record/autosave_association'
   autoload :Base, 'active_record/base'
+  autoload :Batches, 'active_record/batches'
   autoload :Calculations, 'active_record/calculations'
   autoload :Callbacks, 'active_record/callbacks'
   autoload :Dirty, 'active_record/dirty'
   autoload :DynamicFinderMatch, 'active_record/dynamic_finder_match'
+  autoload :DynamicScopeMatch, 'active_record/dynamic_scope_match'
   autoload :Migration, 'active_record/migration'
   autoload :Migrator, 'active_record/migration'
   autoload :NamedScope, 'active_record/named_scope'
+  autoload :NestedAttributes, 'active_record/nested_attributes'
   autoload :Observing, 'active_record/observer'
   autoload :QueryCache, 'active_record/query_cache'
   autoload :Reflection, 'active_record/reflection'
   autoload :Schema, 'active_record/schema'
   autoload :SchemaDumper, 'active_record/schema_dumper'
   autoload :Serialization, 'active_record/serialization'
+  autoload :SessionStore, 'active_record/session_store'
   autoload :TestCase, 'active_record/test_case'
   autoload :Timestamp, 'active_record/timestamp'
   autoload :Transactions, 'active_record/transactions'

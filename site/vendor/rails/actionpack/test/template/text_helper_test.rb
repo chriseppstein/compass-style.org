@@ -1,5 +1,10 @@
 require 'abstract_unit'
 require 'testing_sandbox'
+begin
+  require 'redcloth'
+rescue LoadError
+  $stderr.puts "Skipping textilize tests. `gem install RedCloth` to enable."
+end
 
 class TextHelperTest < ActionView::TestCase
   tests ActionView::Helpers::TextHelper
@@ -119,6 +124,29 @@ class TextHelperTest < ActionView::TestCase
     assert_equal(
       "This is a <b>beautiful</b> morning, but also a <b>beautiful</b> day",
       highlight("This is a beautiful morning, but also a beautiful day", "beautiful", :highlighter => '<b>\1</b>')
+    )
+  end
+
+  def test_highlight_with_html
+    assert_equal(
+      "<p>This is a <strong class=\"highlight\">beautiful</strong> morning, but also a <strong class=\"highlight\">beautiful</strong> day</p>",
+      highlight("<p>This is a beautiful morning, but also a beautiful day</p>", "beautiful")
+    )
+    assert_equal(
+      "<p>This is a <em><strong class=\"highlight\">beautiful</strong></em> morning, but also a <strong class=\"highlight\">beautiful</strong> day</p>",
+      highlight("<p>This is a <em>beautiful</em> morning, but also a beautiful day</p>", "beautiful")
+    )
+    assert_equal(
+      "<p>This is a <em class=\"error\"><strong class=\"highlight\">beautiful</strong></em> morning, but also a <strong class=\"highlight\">beautiful</strong> <span class=\"last\">day</span></p>",
+      highlight("<p>This is a <em class=\"error\">beautiful</em> morning, but also a beautiful <span class=\"last\">day</span></p>", "beautiful")
+    )
+    assert_equal(
+      "<p class=\"beautiful\">This is a <strong class=\"highlight\">beautiful</strong> morning, but also a <strong class=\"highlight\">beautiful</strong> day</p>",
+      highlight("<p class=\"beautiful\">This is a beautiful morning, but also a beautiful day</p>", "beautiful")
+    )
+    assert_equal(
+      "<p>This is a <strong class=\"highlight\">beautiful</strong> <a href=\"http://example.com/beautiful\#top?what=beautiful%20morning&when=now+then\">morning</a>, but also a <strong class=\"highlight\">beautiful</strong> day</p>",
+      highlight("<p>This is a beautiful <a href=\"http://example.com/beautiful\#top?what=beautiful%20morning&when=now+then\">morning</a>, but also a beautiful day</p>", "beautiful")
     )
   end
 
@@ -262,6 +290,11 @@ class TextHelperTest < ActionView::TestCase
     email2_result = %{<a href="mailto:#{email2_raw}">#{email2_raw}</a>}
     assert_equal email2_result, auto_link(email2_raw)
 
+    email3_raw    = '+david@loudthinking.com'
+    email3_result = %{<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;+%64%61%76%69%64@%6c%6f%75%64%74%68%69%6e%6b%69%6e%67.%63%6f%6d">#{email3_raw}</a>}
+    assert_equal email3_result, auto_link(email3_raw, :all, :encode => :hex)
+    assert_equal email3_result, auto_link(email3_raw, :email_addresses, :encode => :hex)
+
     link2_raw    = 'www.rubyonrails.com'
     link2_result = generate_result(link2_raw, "http://#{link2_raw}")
     assert_equal %(Go to #{link2_result}), auto_link("Go to #{link2_raw}", :urls)
@@ -347,6 +380,12 @@ class TextHelperTest < ActionView::TestCase
     assert_equal "{link: #{link3_result}}", auto_link("{link: #{link3_raw}}")
   end
 
+  def test_auto_link_in_tags
+    link_raw    = 'http://www.rubyonrails.org/images/rails.png'
+    link_result = %Q(<img src="#{link_raw}" />)
+    assert_equal link_result, auto_link(link_result)
+  end
+
   def test_auto_link_at_eol
     url1 = "http://api.rubyonrails.com/Foo.html"
     url2 = "http://www.ruby-doc.org/core/Bar.html"
@@ -362,7 +401,7 @@ class TextHelperTest < ActionView::TestCase
   end
 
   def test_auto_link_with_options_hash
-    assert_dom_equal 'Welcome to my new blog at <a href="http://www.myblog.com/" class="menu" target="_blank">http://www.myblog.com/</a>. Please e-mail me at <a href="mailto:me@email.com">me@email.com</a>.',
+    assert_dom_equal 'Welcome to my new blog at <a href="http://www.myblog.com/" class="menu" target="_blank">http://www.myblog.com/</a>. Please e-mail me at <a href="mailto:me@email.com" class="menu" target="_blank">me@email.com</a>.',
       auto_link("Welcome to my new blog at http://www.myblog.com/. Please e-mail me at me@email.com.",
                 :link => :all, :html => { :class => "menu", :target => "_blank" })
   end
@@ -482,5 +521,23 @@ class TextHelperTest < ActionView::TestCase
     assert_equal("blue", cycle("red", "blue"))
     assert_equal("red", cycle("red", "blue"))
     assert_equal(%w{Specialized Fuji Giant}, @cycles)
+  end
+
+  if defined? RedCloth
+    def test_textilize
+      assert_equal("<p><strong>This is Textile!</strong>  Rejoice!</p>", textilize("*This is Textile!*  Rejoice!"))
+    end
+
+    def test_textilize_with_blank
+      assert_equal("", textilize(""))
+    end
+
+    def test_textilize_with_options
+      assert_equal("<p>This is worded &lt;strong&gt;strongly&lt;/strong&gt;</p>", textilize("This is worded <strong>strongly</strong>", :filter_html))
+    end
+
+    def test_textilize_with_hard_breaks
+      assert_equal("<p>This is one scary world.<br />\n True.</p>", textilize("This is one scary world.\n True."))
+    end
   end
 end

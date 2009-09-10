@@ -17,7 +17,8 @@ options = {
   :environment => (ENV['RAILS_ENV'] || "development").dup,
   :config      => RAILS_ROOT + "/config.ru",
   :detach      => false,
-  :debugger    => false
+  :debugger    => false,
+  :path        => nil
 }
 
 ARGV.clone.options do |opts|
@@ -32,6 +33,7 @@ ARGV.clone.options do |opts|
   opts.on("-e", "--environment=name", String,
           "Specifies the environment to run this server under (test/development/production).",
           "Default: development") { |v| options[:environment] = v }
+  opts.on("-P", "--path=/path", String, "Runs Rails app mounted at a specific path.", "Default: /") { |v| options[:path] = v }
 
   opts.separator ""
 
@@ -50,7 +52,7 @@ unless server
 end
 
 puts "=> Booting #{ActiveSupport::Inflector.demodulize(server)}"
-puts "=> Rails #{Rails.version} application starting on http://#{options[:Host]}:#{options[:Port]}"
+puts "=> Rails #{Rails.version} application starting on http://#{options[:Host]}:#{options[:Port]}#{options[:path]}"
 
 %w(cache pids sessions sockets).each do |dir_to_make|
   FileUtils.mkdir_p(File.join(RAILS_ROOT, 'tmp', dir_to_make))
@@ -65,7 +67,6 @@ end
 
 ENV["RAILS_ENV"] = options[:environment]
 RAILS_ENV.replace(options[:environment]) if defined?(RAILS_ENV)
-require RAILS_ROOT + "/config/environment"
 
 if File.exist?(options[:config])
   config = options[:config]
@@ -74,19 +75,31 @@ if File.exist?(options[:config])
     if cfgfile[/^#\\(.*)/]
       opts.parse!($1.split(/\s+/))
     end
-    app = eval("Rack::Builder.new {( " + cfgfile + "\n )}.to_app", nil, config)
+    inner_app = eval("Rack::Builder.new {( " + cfgfile + "\n )}.to_app", nil, config)
   else
     require config
-    app = Object.const_get(File.basename(config, '.rb').capitalize)
+    inner_app = Object.const_get(File.basename(config, '.rb').capitalize)
   end
 else
-  app = Rack::Builder.new {
-    use Rails::Rack::Logger
-    use Rails::Rack::Static
-    use Rails::Rack::Debugger if options[:debugger]
-    run ActionController::Dispatcher.new
-  }.to_app
+  require RAILS_ROOT + "/config/environment"
+  inner_app = ActionController::Dispatcher.new
 end
+
+if options[:path].nil?
+  map_path = "/"
+else
+  ActionController::Base.relative_url_root = options[:path]
+  map_path = options[:path]
+end
+
+app = Rack::Builder.new {
+  use Rails::Rack::LogTailer unless options[:detach]
+  use Rails::Rack::Debugger if options[:debugger]
+  map map_path do
+    use Rails::Rack::Static 
+    run inner_app
+  end
+}.to_app
 
 puts "=> Call with -d to detach"
 

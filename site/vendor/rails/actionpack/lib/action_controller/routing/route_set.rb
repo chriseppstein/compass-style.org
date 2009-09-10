@@ -145,10 +145,10 @@ module ActionController
           def define_hash_access(route, name, kind, options)
             selector = hash_access_name(name, kind)
             named_helper_module_eval <<-end_eval # We use module_eval to avoid leaks
-              def #{selector}(options = nil)
-                options ? #{options.inspect}.merge(options) : #{options.inspect}
-              end
-              protected :#{selector}
+              def #{selector}(options = nil)                                      # def hash_for_users_url(options = nil)
+                options ? #{options.inspect}.merge(options) : #{options.inspect}  #   options ? {:only_path=>false}.merge(options) : {:only_path=>false}
+              end                                                                 # end
+              protected :#{selector}                                              # protected :hash_for_users_url
             end_eval
             helpers << selector
           end
@@ -173,32 +173,33 @@ module ActionController
             #   foo_url(bar, baz, bang, :sort_by => 'baz')
             #
             named_helper_module_eval <<-end_eval # We use module_eval to avoid leaks
-              def #{selector}(*args)
-
-                #{generate_optimisation_block(route, kind)}
-
-                opts = if args.empty? || Hash === args.first
-                  args.first || {}
-                else
-                  options = args.extract_options!
-                  args = args.zip(#{route.segment_keys.inspect}).inject({}) do |h, (v, k)|
-                    h[k] = v
-                    h
-                  end
-                  options.merge(args)
-                end
-
-                url_for(#{hash_access_method}(opts))
-                
-              end
-              #Add an alias to support the now deprecated formatted_* URL.
-              def formatted_#{selector}(*args)
-                ActiveSupport::Deprecation.warn(
-                  "formatted_#{selector}() has been deprecated. please pass format to the standard" +
-                  "#{selector}() method instead.", caller)
-                #{selector}(*args)
-              end
-              protected :#{selector}
+              def #{selector}(*args)                                                        # def users_url(*args)
+                                                                                            #
+                #{generate_optimisation_block(route, kind)}                                 #   #{generate_optimisation_block(route, kind)}
+                                                                                            #
+                opts = if args.empty? || Hash === args.first                                #   opts = if args.empty? || Hash === args.first
+                  args.first || {}                                                          #     args.first || {}
+                else                                                                        #   else
+                  options = args.extract_options!                                           #     options = args.extract_options!
+                  args = args.zip(#{route.segment_keys.inspect}).inject({}) do |h, (v, k)|  #     args = args.zip([]).inject({}) do |h, (v, k)|
+                    h[k] = v                                                                #       h[k] = v
+                    h                                                                       #       h
+                  end                                                                       #     end
+                  options.merge(args)                                                       #     options.merge(args)
+                end                                                                         #   end
+                                                                                            #
+                url_for(#{hash_access_method}(opts))                                        #   url_for(hash_for_users_url(opts))
+                                                                                            #
+              end                                                                           # end
+              #Add an alias to support the now deprecated formatted_* URL.                  # #Add an alias to support the now deprecated formatted_* URL.
+              def formatted_#{selector}(*args)                                              # def formatted_users_url(*args)
+                ActiveSupport::Deprecation.warn(                                            #   ActiveSupport::Deprecation.warn(
+                  "formatted_#{selector}() has been deprecated. " +                         #     "formatted_users_url() has been deprecated. " +
+                  "Please pass format to the standard " +                                   #     "Please pass format to the standard " +
+                  "#{selector} method instead.", caller)                                    #     "users_url method instead.", caller)
+                #{selector}(*args)                                                          #   users_url(*args)
+              end                                                                           # end
+              protected :#{selector}                                                        # protected :users_url
             end_eval
             helpers << selector
           end
@@ -304,6 +305,7 @@ module ActionController
       end
 
       def add_route(path, options = {})
+        options.each { |k, v| options[k] = v.to_s if [:controller, :action].include?(k) && v.is_a?(Symbol) }
         route = builder.build(path, options)
         routes << route
         route
@@ -403,11 +405,14 @@ module ActionController
           end
 
           # don't use the recalled keys when determining which routes to check
-          routes = routes_by_controller[controller][action][options.reject {|k,v| !v}.keys.sort_by { |x| x.object_id }]
+          future_routes, deprecated_routes = routes_by_controller[controller][action][options.reject {|k,v| !v}.keys.sort_by { |x| x.object_id }]
+          routes = Routing.generate_best_match ? deprecated_routes : future_routes
 
-          routes.each do |route|
+          routes.each_with_index do |route, index|
             results = route.__send__(method, options, merged, expire_on)
-            return results if results && (!results.is_a?(Array) || results.first)
+            if results && (!results.is_a?(Array) || results.first)
+              return results
+            end
           end
         end
 
@@ -426,10 +431,16 @@ module ActionController
         end
       end
 
+      def call(env)
+        request = Request.new(env)
+        app = Routing::Routes.recognize(request)
+        app.call(env).to_a
+      end
+
       def recognize(request)
         params = recognize_path(request.path, extract_request_environment(request))
         request.path_parameters = params.with_indifferent_access
-        "#{params[:controller].camelize}Controller".constantize
+        "#{params[:controller].to_s.camelize}Controller".constantize
       end
 
       def recognize_path(path, environment={})
@@ -440,7 +451,10 @@ module ActionController
         @routes_by_controller ||= Hash.new do |controller_hash, controller|
           controller_hash[controller] = Hash.new do |action_hash, action|
             action_hash[action] = Hash.new do |key_hash, keys|
-              key_hash[keys] = routes_for_controller_and_action_and_keys(controller, action, keys)
+              key_hash[keys] = [
+                routes_for_controller_and_action_and_keys(controller, action, keys),
+                deprecated_routes_for_controller_and_action_and_keys(controller, action, keys)
+              ]
             end
           end
         end
@@ -452,10 +466,11 @@ module ActionController
         merged = options if expire_on[:controller]
         action = merged[:action] || 'index'
 
-        routes_by_controller[controller][action][merged.keys]
+        routes_by_controller[controller][action][merged.keys][1]
       end
 
       def routes_for_controller_and_action(controller, action)
+        ActiveSupport::Deprecation.warn "routes_for_controller_and_action() has been deprecated. Please use routes_for()"
         selected = routes.select do |route|
           route.matches_controller_and_action? controller, action
         end
@@ -463,6 +478,12 @@ module ActionController
       end
 
       def routes_for_controller_and_action_and_keys(controller, action, keys)
+        routes.select do |route|
+          route.matches_controller_and_action? controller, action
+        end
+      end
+
+      def deprecated_routes_for_controller_and_action_and_keys(controller, action, keys)
         selected = routes.select do |route|
           route.matches_controller_and_action? controller, action
         end

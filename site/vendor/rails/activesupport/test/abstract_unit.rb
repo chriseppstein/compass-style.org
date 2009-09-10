@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'test/unit'
-gem 'mocha', '>= 0.9.3'
-require 'mocha'
+
+ENV['NO_RELOAD'] = '1'
 
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'active_support'

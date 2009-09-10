@@ -109,7 +109,7 @@ end
 
 class ObjectTests < Test::Unit::TestCase
   def test_suppress_re_raises
-    assert_raises(LoadError) { suppress(ArgumentError) {raise LoadError} }
+    assert_raise(LoadError) { suppress(ArgumentError) {raise LoadError} }
   end
   def test_suppress_supresses
     suppress(ArgumentError) { raise ArgumentError }
@@ -256,18 +256,10 @@ class ObjectTryTest < Test::Unit::TestCase
   def test_nonexisting_method
     method = :undefined_method
     assert !@string.respond_to?(method)
-    assert_nil @string.try(method)
+    assert_raise(NoMethodError) { @string.try(method) }
   end
   
   def test_valid_method
-    assert_equal 5, @string.try(:size)
-  end
-
-  def test_valid_private_method
-    class << @string
-      private :size
-    end
-
     assert_equal 5, @string.try(:size)
   end
 
@@ -277,5 +269,14 @@ class ObjectTryTest < Test::Unit::TestCase
 
   def test_block_forwarding
     assert_equal 'Hey', @string.try(:sub, 'llo') { |match| 'y' }
+  end
+
+  def test_nil_to_type
+    assert_nil nil.try(:to_s)
+    assert_nil nil.try(:to_i)
+  end
+
+  def test_false_try
+    assert_equal 'false', false.try(:to_s)
   end
 end

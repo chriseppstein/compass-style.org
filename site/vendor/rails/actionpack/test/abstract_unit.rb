@@ -8,7 +8,7 @@ require 'yaml'
 require 'stringio'
 require 'test/unit'
 
-gem 'mocha', '>= 0.9.3'
+gem 'mocha', '>= 0.9.7'
 require 'mocha'
 
 begin
@@ -30,10 +30,32 @@ ActiveSupport::Deprecation.debug = true
 ActionController::Base.logger = nil
 ActionController::Routing::Routes.reload rescue nil
 
-FIXTURE_LOAD_PATH = File.join(File.dirname(__FILE__), 'fixtures')
-ActionController::Base.view_paths = FIXTURE_LOAD_PATH
-ActionController::Base.view_paths.load
+ActionController::Base.session_store = nil
 
-def uses_mocha(test_name)
-  yield
+# Register danish language for testing
+I18n.backend.store_translations 'da', {}
+I18n.backend.store_translations 'pt-BR', {}
+ORIGINAL_LOCALES = I18n.available_locales.map(&:to_s).sort
+
+FIXTURE_LOAD_PATH = File.join(File.dirname(__FILE__), 'fixtures')
+ActionView::Base.cache_template_loading = true
+ActionController::Base.view_paths = FIXTURE_LOAD_PATH
+CACHED_VIEW_PATHS = ActionView::Base.cache_template_loading? ?
+                      ActionController::Base.view_paths :
+                      ActionController::Base.view_paths.map {|path| ActionView::Template::EagerPath.new(path.to_s)}
+
+class DummyMutex
+  def lock
+    @locked = true
+  end
+
+  def unlock
+    @locked = false
+  end
+
+  def locked?
+    @locked
+  end
 end
+
+ActionController::Reloader.default_lock = DummyMutex.new

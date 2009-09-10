@@ -77,6 +77,24 @@ class StringInflectionsTest < Test::Unit::TestCase
     end
   end
 
+  def test_string_parameterized_normal
+    StringToParameterized.each do |normal, slugged|
+      assert_equal(normal.parameterize, slugged)
+    end
+  end
+
+  def test_string_parameterized_no_separator
+    StringToParameterizeWithNoSeparator.each do |normal, slugged|
+      assert_equal(normal.parameterize(''), slugged)
+    end
+  end
+
+  def test_string_parameterized_underscore
+    StringToParameterizeWithUnderscore.each do |normal, slugged|
+      assert_equal(normal.parameterize('_'), slugged)
+    end
+  end
+
   def test_humanize
     UnderscoreToHuman.each do |underscore, human|
       assert_equal(human, underscore.humanize)
@@ -114,10 +132,12 @@ class StringInflectionsTest < Test::Unit::TestCase
 
     assert_equal "h", s.first
     assert_equal "he", s.first(2)
+    assert_equal "", s.first(0)
 
     assert_equal "o", s.last
     assert_equal "llo", s.last(3)
     assert_equal "hello", s.last(10)
+    assert_equal "", s.last(0)
 
     assert_equal 'x', 'x'.first
     assert_equal 'x', 'x'.first(4)
@@ -252,5 +272,12 @@ class CoreExtStringMultibyteTest < ActiveSupport::TestCase
     def test_mb_chars_returns_string
       assert UNICODE_STRING.mb_chars.kind_of?(String)
     end
+  end
+end
+
+class StringBytesizeTest < Test::Unit::TestCase
+  def test_bytesize
+    assert_respond_to 'foo', :bytesize
+    assert_equal 3, 'foo'.bytesize
   end
 end
