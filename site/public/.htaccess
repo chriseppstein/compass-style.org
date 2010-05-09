@@ -1,0 +1,2 @@
+RedirectMatch ^(/docs/[^.]+[^/])$ $1/
+
